@@ -1,0 +1,249 @@
+openapi: 3.0.0
+info:
+  title: Microservicio de Posts
+  version: 1.1.0
+servers:
+  - url: http://localhost:8080/api
+
+paths:
+  /v1/posts:
+    get:
+      summary: Obtener todos los posts
+      responses:
+        '200':
+          description: Lista de posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+    post:
+      summary: Crear un nuevo post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCreate'
+      responses:
+        '201':
+          description: Post creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+  /v1/posts/{id}:
+    get:
+      summary: Obtener un post por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalles del post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+    put:
+      summary: Actualizar un post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostUpdate'
+      responses:
+        '200':
+          description: Post actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+    delete:
+      summary: Eliminar un post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Post eliminado exitosamente
+  /v1/posts/{id}/likes:
+    post:
+      summary: Dar like a un post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Like agregado al post
+    delete:
+      summary: Eliminar like de un post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Like eliminado del post
+        '404':
+          description: No se encontró el like o el post
+        '401':
+          description: No autorizado
+  /v1/posts/{id}/comments:
+    get:
+      summary: Obtener comentarios de un post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de comentarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+    post:
+      summary: Agregar un comentario a un post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCreate'
+      responses:
+        '201':
+          description: Comentario creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+
+components:
+  schemas:
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        type:
+          type: string
+          enum: [text, image, video]
+        isPaid:
+          type: boolean
+        cost:
+          type: number
+          format: float
+          nullable: true
+        isAd:
+          type: boolean
+        maxViews:
+          type: integer
+          nullable: true
+        viewsRemaining:
+          type: integer
+          nullable: true
+        footer:
+          type: string
+          nullable: true
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        likes:
+          type: integer
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Post'
+      required:
+        - id
+        - content
+        - type
+    PostCreate:
+      type: object
+      properties:
+        content:
+          type: string
+        type:
+          type: string
+          enum: [text, image, video]
+        isPaid:
+          type: boolean
+          default: false
+        cost:
+          type: number
+          format: float
+          nullable: true
+        isAd:
+          type: boolean
+          default: false
+        maxViews:
+          type: integer
+          nullable: true
+        footer:
+          type: string
+          nullable: true
+        userIds:
+          type: array
+          items:
+            type: string
+      required:
+        - content
+        - type
+    PostUpdate:
+      type: object
+      properties:
+        content:
+          type: string
+        footer:
+          type: string
+          nullable: true
+        cost:
+          type: number
+          format: float
+          nullable: true
+        maxViews:
+          type: integer
+          nullable: true
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required:
+        - id
+        - name
