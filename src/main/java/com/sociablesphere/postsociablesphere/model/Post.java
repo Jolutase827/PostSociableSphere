@@ -11,16 +11,16 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 @Table("posts")
-public class Posts {
+public class Post {
 
     @Id
     private Long id;
 
     private String content;
     private String type;
-    private Boolean isPaid = false;
+    private Boolean isPaid;
     private BigDecimal cost;
-    private Boolean isAd = false;
+    private Boolean isAd;
     private Integer maxViews;
     private Integer viewsRemaining;
     private String footer;
