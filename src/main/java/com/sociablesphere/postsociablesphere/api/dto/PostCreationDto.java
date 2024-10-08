@@ -1,20 +1,16 @@
-package com.sociablesphere.postsociablesphere.model;
+package com.sociablesphere.postsociablesphere.api.dto;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
 
+@Generated
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@Table("posts")
-public class Post {
+public class PostCreationDto {
 
-    @Id
-    private Long id;
 
     private String content;
     private String type;
@@ -22,7 +18,8 @@ public class Post {
     private BigDecimal cost;
     private Boolean isAd;
     private Integer maxViews;
-    private Integer viewsRemaining;
     private String footer;
     private Long parentId;
+    private Long userId;
+
 }

@@ -42,9 +42,9 @@ public class UserDetailDTO {
     @NotBlank(message = "El rol no puede estar vacío")
     private String role;
 
-    private Double wallet; // Puede ser nulo si no se establece.
+    private Double wallet;
 
-    private String apiToken; // Puede ser nulo si no se establece.
+    private String apiToken;
 
     private LocalDateTime createdAt;
 

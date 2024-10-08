@@ -1,21 +1,19 @@
-package com.sociablesphere.postsociablesphere.model;
+package com.sociablesphere.postsociablesphere.api.dto;
+
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
+import reactor.core.publisher.Flux;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
+@Generated
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@Table("posts")
-public class Post {
-
-    @Id
+public class PostResponseDto {
     private Long id;
-
     private String content;
     private String type;
     private Boolean isPaid;
@@ -25,4 +23,6 @@ public class Post {
     private Integer viewsRemaining;
     private String footer;
     private Long parentId;
+    private Set<Long> likes;
+    private Set<UserResponseDto> postOwners;
 }
