@@ -1,6 +1,7 @@
 package com.sociablesphere.postsociablesphere.repository;
 
 import com.sociablesphere.postsociablesphere.api.dto.UserDetailDTO;
+import com.sociablesphere.postsociablesphere.api.dto.UserResponseDto;
 import com.sociablesphere.postsociablesphere.exceptions.ExternalMicroserviceException;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -29,12 +30,12 @@ public class UserRepository {
                 });
     }
 
-    public Mono<UserDetailDTO> findById(Long userId) {
+    public Mono<UserResponseDto> findById(Long userId) {
         return webClientBuilder.build()
                 .get()
                 .uri("http://userservice/v1/users/{id}", userId)
                 .retrieve()
-                .bodyToMono(UserDetailDTO.class)
+                .bodyToMono(UserResponseDto.class)
                 .onErrorResume(WebClientResponseException.class, error -> {
                     String errorMessage = String.format("Error fetching user by ID: %s", error.getMessage());
                     System.err.println(errorMessage);

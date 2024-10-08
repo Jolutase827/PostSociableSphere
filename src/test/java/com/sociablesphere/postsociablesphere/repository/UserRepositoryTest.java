@@ -1,6 +1,7 @@
 package com.sociablesphere.postsociablesphere.repository;
 
 import com.sociablesphere.postsociablesphere.api.dto.UserDetailDTO;
+import com.sociablesphere.postsociablesphere.api.dto.UserResponseDto;
 import com.sociablesphere.postsociablesphere.exceptions.ExternalMicroserviceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -120,7 +121,7 @@ public class UserRepositoryTest {
         doReturn(Mono.just(mockUserDetail)).when(responseSpec).bodyToMono(UserDetailDTO.class);
 
         // Act
-        Mono<UserDetailDTO> result = userRepository.findById(userId);
+        Mono<UserResponseDto> result = userRepository.findById(userId);
 
         // Assert
         StepVerifier.create(result)
@@ -147,7 +148,7 @@ public class UserRepositoryTest {
         doReturn(Mono.error(mockException)).when(responseSpec).bodyToMono(UserDetailDTO.class);
 
         // Act
-        Mono<UserDetailDTO> result = userRepository.findById(userId);
+        Mono<UserResponseDto> result = userRepository.findById(userId);
 
         // Assert
         StepVerifier.create(result)
