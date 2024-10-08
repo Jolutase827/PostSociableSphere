@@ -23,6 +23,6 @@ public class PostResponseDto {
     private Integer viewsRemaining;
     private String footer;
     private Long parentId;
-    private Set<Long> likes;
+    private Set<LikeResponseDto> likes;
     private Set<UserResponseDto> postOwners;
 }

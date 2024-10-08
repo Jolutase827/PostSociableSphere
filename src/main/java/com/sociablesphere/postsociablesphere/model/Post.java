@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -25,4 +26,7 @@ public class Post {
     private Integer viewsRemaining;
     private String footer;
     private Long parentId;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
 }
