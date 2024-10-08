@@ -1,8 +1,10 @@
 package com.sociablesphere.postsociablesphere.repository;
 
 import com.sociablesphere.postsociablesphere.api.dto.UserDetailDTO;
+import com.sociablesphere.postsociablesphere.exceptions.ExternalMicroserviceException;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 @Repository
@@ -20,9 +22,10 @@ public class UserRepository {
                 .uri("http://userservice/v1/users/apiToken?apiToken={apiToken}", apiToken)
                 .retrieve()
                 .bodyToMono(UserDetailDTO.class)
-                .onErrorResume(error -> {
-                    System.err.println("Error fetching user by apiToken: " + error.getMessage());
-                    return Mono.empty();
+                .onErrorResume(WebClientResponseException.class, error -> {
+                    String errorMessage = String.format("Error fetching user by apiToken: %s", error.getMessage());
+                    System.err.println(errorMessage);
+                    throw new ExternalMicroserviceException(errorMessage);
                 });
     }
 
@@ -32,9 +35,10 @@ public class UserRepository {
                 .uri("http://userservice/v1/users/{id}", userId)
                 .retrieve()
                 .bodyToMono(UserDetailDTO.class)
-                .onErrorResume(error -> {
-                    System.err.println("Error fetching user by ID: " + error.getMessage());
-                    return Mono.empty();
+                .onErrorResume(WebClientResponseException.class, error -> {
+                    String errorMessage = String.format("Error fetching user by ID: %s", error.getMessage());
+                    System.err.println(errorMessage);
+                    throw new ExternalMicroserviceException(errorMessage);
                 });
     }
 }

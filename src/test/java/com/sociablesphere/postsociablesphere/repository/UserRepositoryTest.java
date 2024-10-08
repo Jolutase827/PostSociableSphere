@@ -1,6 +1,7 @@
 package com.sociablesphere.postsociablesphere.repository;
 
 import com.sociablesphere.postsociablesphere.api.dto.UserDetailDTO;
+import com.sociablesphere.postsociablesphere.exceptions.ExternalMicroserviceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -10,10 +11,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersUriSpec;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static org.mockito.ArgumentMatchers.any;
+import org.springframework.http.HttpStatus;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -72,6 +75,36 @@ public class UserRepositoryTest {
         verify(responseSpec, times(1)).bodyToMono(UserDetailDTO.class);
     }
 
+
+    @Test
+    public void testFindByApiToken_Error() {
+        // Arrange
+        String apiToken = "invalidApiToken";
+        WebClientResponseException mockException = WebClientResponseException.create(
+                404, "Not Found", null, null, null);
+
+        doReturn(requestHeadersUriSpec).when(webClient).get();
+        doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri(anyString(), eq(apiToken));
+        doReturn(responseSpec).when(requestHeadersSpec).retrieve();
+        doReturn(Mono.error(mockException)).when(responseSpec).bodyToMono(UserDetailDTO.class);
+
+        // Act
+        Mono<UserDetailDTO> result = userRepository.findByApiToken(apiToken);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof ExternalMicroserviceException &&
+                        throwable.getMessage().contains("Error fetching user by apiToken"))
+                .verify();
+
+        // Verify that the WebClient chain was called as expected
+        verify(webClient, times(1)).get();
+        verify(requestHeadersUriSpec, times(1)).uri(anyString(), eq(apiToken));
+        verify(requestHeadersSpec, times(1)).retrieve();
+        verify(responseSpec, times(1)).bodyToMono(UserDetailDTO.class);
+    }
+
+
     @Test
     public void testFindById_Success() {
         // Arrange
@@ -93,6 +126,34 @@ public class UserRepositoryTest {
         StepVerifier.create(result)
                 .expectNextMatches(user -> user.getId().equals(userId) && user.getUserName().equals("testUser"))
                 .verifyComplete();
+
+        // Verify that the WebClient chain was called as expected
+        verify(webClient, times(1)).get();
+        verify(requestHeadersUriSpec, times(1)).uri(anyString(), eq(userId));
+        verify(requestHeadersSpec, times(1)).retrieve();
+        verify(responseSpec, times(1)).bodyToMono(UserDetailDTO.class);
+    }
+
+    @Test
+    public void testFindById_Error() {
+        // Arrange
+        Long userId = 1L;
+        WebClientResponseException mockException = WebClientResponseException.create(
+                404, "Not Found", null, null, null);
+
+        doReturn(requestHeadersUriSpec).when(webClient).get();
+        doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri(anyString(), eq(userId));
+        doReturn(responseSpec).when(requestHeadersSpec).retrieve();
+        doReturn(Mono.error(mockException)).when(responseSpec).bodyToMono(UserDetailDTO.class);
+
+        // Act
+        Mono<UserDetailDTO> result = userRepository.findById(userId);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof ExternalMicroserviceException &&
+                        throwable.getMessage().contains("Error fetching user by ID"))
+                .verify();
 
         // Verify that the WebClient chain was called as expected
         verify(webClient, times(1)).get();
@@ -135,5 +196,25 @@ public class UserRepositoryTest {
     }
 
 
+    //TEMPORARY TEST NOT UNIT TEST. TESTS ACTUAL CONNECTION TO MICROSERVICE.
+    @Test
+    public void testGetUserById_Error() {
+        Long userId = 999L; // Use an ID that doesn't exist to trigger an error
+
+        WebClient webClient = WebClient.create("http://localhost:8080");
+        Mono<UserDetailDTO> response = webClient.get()
+                .uri("/v1/users/{id}", userId)
+                .retrieve()
+                .onStatus(
+                        status -> status.is4xxClientError() || status.is5xxServerError(), // Check if it's a client or server error
+                        clientResponse -> Mono.error(new ExternalMicroserviceException("User not found with ID: " + userId))
+                )
+                .bodyToMono(UserDetailDTO.class);
+
+        StepVerifier.create(response)
+                .expectErrorMatches(throwable -> throwable instanceof ExternalMicroserviceException &&
+                        throwable.getMessage().contains("User not found with ID: " + userId))
+                .verify();
+    }
 
 }
