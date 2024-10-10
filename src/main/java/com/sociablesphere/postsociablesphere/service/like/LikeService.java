@@ -6,6 +6,6 @@ import reactor.core.publisher.Mono;
 
 @Service
 public interface LikeService {
-    Mono<Long> perfomLike(LikeDto likeDto);
+    Mono<Long> performLike(LikeDto likeDto);
     Mono<Long> performDislike(LikeDto likeDto);
 }

@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Mono;
 
-public class ResponseBuilder {
+public class PostResponseBuilder {
 
     public static ResponseEntity<PostResponseDto> buildCreatedResponse(PostResponseDto post, Long userId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(post);
@@ -21,7 +21,7 @@ public class ResponseBuilder {
     }
 
     public static ResponseEntity<UserResponseDto> buildOwnerAddedResponse(UserResponseDto owner) {
-        return ResponseEntity.ok(owner);
+        return ResponseEntity.status(HttpStatus.CREATED).body(owner);
     }
 
 }
