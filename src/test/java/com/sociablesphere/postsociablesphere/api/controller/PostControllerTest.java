@@ -1,6 +1,7 @@
 package com.sociablesphere.postsociablesphere.api.controller;
 
 import com.sociablesphere.postsociablesphere.api.dto.*;
+import com.sociablesphere.postsociablesphere.response.service.PostResponseService;
 import com.sociablesphere.postsociablesphere.service.post.PostService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,25 +24,28 @@ class PostControllerTest {
     @Mock
     private PostService postService;
 
+    @Mock
+    private PostResponseService postResponseService;
+
     @InjectMocks
     private PostController postController;
 
     @Test
-    @DisplayName("Given valid PostCreationDto, when createPost is called, then return ResponseEntity with PostResponseDto")
+    @DisplayName("Given valid PostCreationDto, when createPost is called, then return ResponseEntity with created status")
     void createPostSuccess() {
         // Given
         PostCreationDto postCreationDto = PostCreationDto.builder()
-                .content("Test Content")
-                .type("text")
+                .content("This is a new post")
                 .userId(1L)
                 .build();
 
         PostResponseDto postResponseDto = PostResponseDto.builder()
                 .id(1L)
-                .content("Test Content")
+                .content("This is a new post")
                 .build();
 
         when(postService.createPost(postCreationDto)).thenReturn(Mono.just(postResponseDto));
+        when(postResponseService.buildCreatedResponse(postResponseDto, 1L)).thenReturn(Mono.just(ResponseEntity.status(HttpStatus.CREATED).body(postResponseDto)));
 
         // When
         Mono<ResponseEntity<PostResponseDto>> result = postController.createPost(postCreationDto);
@@ -55,26 +59,27 @@ class PostControllerTest {
                 .verifyComplete();
 
         verify(postService).createPost(postCreationDto);
+        verify(postResponseService).buildCreatedResponse(postResponseDto, 1L);
     }
 
     @Test
-    @DisplayName("Given valid PostUpdateDto, when updatePost is called, then return ResponseEntity with updated PostResponseDto")
+    @DisplayName("Given valid PostUpdateDto, when updatePost is called, then return ResponseEntity with OK status")
     void updatePostSuccess() {
         // Given
-        Long postId = 1L;
         PostUpdateDto postUpdateDto = PostUpdateDto.builder()
-                .content("Updated Content")
+                .content("This is an updated post")
                 .build();
 
         PostResponseDto postResponseDto = PostResponseDto.builder()
-                .id(postId)
-                .content("Updated Content")
+                .id(1L)
+                .content("This is an updated post")
                 .build();
 
-        when(postService.updatePost(postId, postUpdateDto)).thenReturn(Mono.just(postResponseDto));
+        when(postService.updatePost(1L, postUpdateDto)).thenReturn(Mono.just(postResponseDto));
+        when(postResponseService.buildOkResponse(postResponseDto)).thenReturn(Mono.just(ResponseEntity.ok(postResponseDto)));
 
         // When
-        Mono<ResponseEntity<PostResponseDto>> result = postController.updatePost(postId, postUpdateDto);
+        Mono<ResponseEntity<PostResponseDto>> result = postController.updatePost(1L, postUpdateDto);
 
         // Then
         StepVerifier.create(result)
@@ -84,30 +89,31 @@ class PostControllerTest {
                 })
                 .verifyComplete();
 
-        verify(postService).updatePost(postId, postUpdateDto);
+        verify(postService).updatePost(1L, postUpdateDto);
+        verify(postResponseService).buildOkResponse(postResponseDto);
     }
 
     @Test
-    @DisplayName("Given postId, when deletePost is called, then return ResponseEntity with no content")
+    @DisplayName("Given valid postId, when deletePost is called, then return ResponseEntity with NoContent status")
     void deletePostSuccess() {
         // Given
-        Long postId = 1L;
-
-        when(postService.deletePost(postId)).thenReturn(Mono.empty());
+        when(postService.deletePost(1L)).thenReturn(Mono.empty());
+        when(postResponseService.buildNoContentResponse()).thenReturn(Mono.just(ResponseEntity.noContent().build()));
 
         // When
-        Mono<ResponseEntity<Void>> result = postController.deletePost(postId);
+        Mono<ResponseEntity<Void>> result = postController.deletePost(1L);
 
         // Then
         StepVerifier.create(result)
                 .assertNext(response -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT))
                 .verifyComplete();
 
-        verify(postService).deletePost(postId);
+        verify(postService).deletePost(1L);
+        verify(postResponseService).buildNoContentResponse();
     }
 
     @Test
-    @DisplayName("Given valid NewOwnerDto, when addOwner is called, then return ResponseEntity with UserResponseDto")
+    @DisplayName("Given valid NewOwnerDto, when addOwner is called, then return ResponseEntity with created status")
     void addOwnerSuccess() {
         // Given
         NewOwnerDto newOwnerDto = NewOwnerDto.builder()
@@ -117,10 +123,11 @@ class PostControllerTest {
 
         UserResponseDto userResponseDto = UserResponseDto.builder()
                 .id(2L)
-                .userName("newowner")
+                .name("Toni")
                 .build();
 
         when(postService.addOwner(newOwnerDto)).thenReturn(Mono.just(userResponseDto));
+        when(postResponseService.buildOwnerAddedResponse(userResponseDto)).thenReturn(Mono.just(ResponseEntity.status(HttpStatus.CREATED).body(userResponseDto)));
 
         // When
         Mono<ResponseEntity<UserResponseDto>> result = postController.addOwner(newOwnerDto);
@@ -134,8 +141,6 @@ class PostControllerTest {
                 .verifyComplete();
 
         verify(postService).addOwner(newOwnerDto);
+        verify(postResponseService).buildOwnerAddedResponse(userResponseDto);
     }
-
-
 }
-

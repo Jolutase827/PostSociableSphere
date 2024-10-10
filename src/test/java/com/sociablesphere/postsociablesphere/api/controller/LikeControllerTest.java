@@ -1,6 +1,7 @@
 package com.sociablesphere.postsociablesphere.api.controller;
 
 import com.sociablesphere.postsociablesphere.api.dto.LikeDto;
+import com.sociablesphere.postsociablesphere.response.service.LikeResponseService;
 import com.sociablesphere.postsociablesphere.service.like.LikeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,11 +24,14 @@ class LikeControllerTest {
     @Mock
     private LikeService likeService;
 
+    @Mock
+    private LikeResponseService likeResponseService;
+
     @InjectMocks
     private LikeController likeController;
 
     @Test
-    @DisplayName("Given valid LikeDto, when performLike is called, then return ResponseEntity with no content")
+    @DisplayName("Given valid LikeDto, when performLike is called, then return ResponseEntity with created status")
     void performLikeSuccess() {
         // Given
         LikeDto likeDto = LikeDto.builder()
@@ -36,6 +40,7 @@ class LikeControllerTest {
                 .build();
 
         when(likeService.performLike(likeDto)).thenReturn(Mono.just(10L));
+        when(likeResponseService.buildLikeResponse(1L, 2L)).thenReturn(Mono.just(ResponseEntity.status(HttpStatus.CREATED).<Void>build()));
 
         // When
         Mono<ResponseEntity<Void>> result = likeController.performLike(likeDto);
@@ -46,6 +51,7 @@ class LikeControllerTest {
                 .verifyComplete();
 
         verify(likeService).performLike(likeDto);
+        verify(likeResponseService).buildLikeResponse(1L, 2L);
     }
 
     @Test
@@ -58,6 +64,7 @@ class LikeControllerTest {
                 .build();
 
         when(likeService.performDislike(likeDto)).thenReturn(Mono.just(5L));
+        when(likeResponseService.buildDislikeResponse(1L, 2L)).thenReturn(Mono.just(ResponseEntity.noContent().<Void>build()));
 
         // When
         Mono<ResponseEntity<Void>> result = likeController.performDislike(likeDto);
@@ -68,5 +75,6 @@ class LikeControllerTest {
                 .verifyComplete();
 
         verify(likeService).performDislike(likeDto);
+        verify(likeResponseService).buildDislikeResponse(1L, 2L);
     }
 }

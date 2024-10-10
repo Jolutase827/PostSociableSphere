@@ -1,7 +1,7 @@
 package com.sociablesphere.postsociablesphere.api.controller;
 
 import com.sociablesphere.postsociablesphere.api.dto.LikeDto;
-import com.sociablesphere.postsociablesphere.response.LikeResponseBuilder;
+import com.sociablesphere.postsociablesphere.response.service.LikeResponseService;
 import com.sociablesphere.postsociablesphere.service.like.LikeService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -19,23 +19,24 @@ public class LikeController {
 
     private static final Logger logger = LoggerFactory.getLogger(LikeController.class);
     private final LikeService likeService;
+    private final LikeResponseService likeResponseService;
 
-    public LikeController(LikeService likeService) {
+    public LikeController(LikeService likeService, LikeResponseService likeResponseService) {
         this.likeService = likeService;
+        this.likeResponseService = likeResponseService;
     }
 
     @PostMapping("/like")
     public Mono<ResponseEntity<Void>> performLike(@Valid @RequestBody LikeDto likeDto) {
         return likeService.performLike(likeDto)
-                .flatMap(likesCount -> LikeResponseBuilder.buildLikeResponse(likeDto.getPostId(), likeDto.getUserId()))
+                .flatMap(likesCount -> likeResponseService.buildLikeResponse(likeDto.getPostId(), likeDto.getUserId()))
                 .doOnSuccess(response -> logger.info("Post {} liked successfully by user {}", likeDto.getPostId(), likeDto.getUserId()));
     }
 
     @PostMapping("/dislike")
     public Mono<ResponseEntity<Void>> performDislike(@Valid @RequestBody LikeDto likeDto) {
         return likeService.performDislike(likeDto)
-                .flatMap(dislikesCount -> LikeResponseBuilder.buildDislikeResponse(likeDto.getPostId(), likeDto.getUserId()))
+                .flatMap(dislikesCount -> likeResponseService.buildDislikeResponse(likeDto.getPostId(), likeDto.getUserId()))
                 .doOnSuccess(response -> logger.info("Post {} disliked successfully by user {}", likeDto.getPostId(), likeDto.getUserId()));
     }
-
 }
