@@ -24,7 +24,7 @@ public class LikeServiceImpl implements LikeService {
 
 
     @Override
-    public Mono<Long> perfomLike(LikeDto likeDto) {
+    public Mono<Long> performLike(LikeDto likeDto) {
         return postRepository.findById(likeDto.getPostId())
                 .switchIfEmpty(Mono.error(new ExternalMicroserviceException("Post no encontrado")))
                 .flatMap(post -> {

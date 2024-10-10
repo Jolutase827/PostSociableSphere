@@ -65,7 +65,7 @@ class LikeServiceImplTest {
             when(likeRepository.save(any(Like.class))).thenReturn(Mono.just(like));
 
             // When
-            Mono<Long> result = likeService.perfomLike(likeDto);
+            Mono<Long> result = likeService.performLike(likeDto);
 
             // Then
             StepVerifier.create(result)
@@ -90,7 +90,7 @@ class LikeServiceImplTest {
             when(postRepository.findById(likeDto.getPostId())).thenReturn(Mono.empty());
 
             // When
-            Mono<Long> result = likeService.perfomLike(likeDto);
+            Mono<Long> result = likeService.performLike(likeDto);
 
             // Then
             StepVerifier.create(result)
@@ -125,7 +125,7 @@ class LikeServiceImplTest {
             when(likeRepository.existsById(likeId)).thenReturn(Mono.just(true));
 
             // When
-            Mono<Long> result = likeService.perfomLike(likeDto);
+            Mono<Long> result = likeService.performLike(likeDto);
 
             // Then
             StepVerifier.create(result)
