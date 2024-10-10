@@ -5,8 +5,8 @@ spring:
   application:
     name: PostSociableSphere
   r2dbc:
-    url: r2dbc:postgresql://socialsphere_root:socialsphere@postgresql-socialsphere.alwaysdata.net:5432/socialsphere_users
-    username: socialsphere_root
+    url: r2dbc:postgresql-jse.alwaysdata.net:5432/jse_post
+    username: jse
     password: socialsphere
   server:
     port: 8081
@@ -20,6 +20,8 @@ spring:
   sql:
     init:
       mode: never
-  users:
-    url: https://localhost:8081
-    get-by-id: /users/
+
+users:
+  url: https://localhost:8081
+  get-by-id: /users/
+

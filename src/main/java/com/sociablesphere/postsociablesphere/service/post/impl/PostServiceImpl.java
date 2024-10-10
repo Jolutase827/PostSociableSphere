@@ -12,6 +12,7 @@ import com.sociablesphere.postsociablesphere.repository.PostRepository;
 import com.sociablesphere.postsociablesphere.repository.PostUserRepository;
 import com.sociablesphere.postsociablesphere.repository.UserRepository;
 import com.sociablesphere.postsociablesphere.service.post.PostService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -20,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class PostServiceImpl implements PostService {
 
     private  PostRepository postRepository;
