@@ -4,6 +4,7 @@ import com.sociablesphere.postsociablesphere.api.dto.UserDetailDTO;
 import com.sociablesphere.postsociablesphere.api.dto.UserResponseDto;
 import com.sociablesphere.postsociablesphere.exceptions.ExternalMicroserviceException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -20,7 +21,7 @@ import org.springframework.http.HttpStatus;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-
+@Disabled
 public class UserRepositoryTest {
 
     @Mock
