@@ -52,7 +52,43 @@ public class PostValidator implements ConstraintValidator<PostValidationConstrai
             }
         }
 
-        return true;
+        String type = post.getType();
+        String content = post.getContent();
 
+        if (type != null && content != null) {
+            switch (type) {
+                case "text":
+                    break;
+
+                case "image":
+                    if (!content.endsWith(".jpg") && !content.endsWith(".png")) {
+                        context.disableDefaultConstraintViolation();
+                        context.buildConstraintViolationWithTemplate("Content must end with .jpg or .png when type is 'image'.")
+                                .addPropertyNode("content")
+                                .addConstraintViolation();
+                        return false;
+                    }
+                    break;
+
+                case "video":
+                    if (!content.endsWith(".mp4")) {
+                        context.disableDefaultConstraintViolation();
+                        context.buildConstraintViolationWithTemplate("Content must end with .mp4 when type is 'video'.")
+                                .addPropertyNode("content")
+                                .addConstraintViolation();
+                        return false;
+                    }
+                    break;
+
+                default:
+                    context.disableDefaultConstraintViolation();
+                    context.buildConstraintViolationWithTemplate("Invalid type. Must be 'text', 'image', or 'video'.")
+                            .addPropertyNode("type")
+                            .addConstraintViolation();
+                    return false;
+            }
+        }
+
+        return true;
     }
 }

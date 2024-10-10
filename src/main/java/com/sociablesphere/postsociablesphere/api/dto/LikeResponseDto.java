@@ -1,5 +1,6 @@
 package com.sociablesphere.postsociablesphere.api.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,9 @@ import java.time.LocalDateTime;
 public class LikeResponseDto {
 
     @EqualsAndHashCode.Include
+    @NotBlank(message = "El id el del usuario no debe estar vacio")
     private Long userId;
+
+    @NotBlank(message = "La fecha del post no debe estar vacia")
     private LocalDateTime createdAt;
 }

@@ -1,6 +1,8 @@
 package com.sociablesphere.postsociablesphere.api.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 
 @Generated
 @Data
@@ -9,6 +11,9 @@ import lombok.*;
 @Builder
 public class LikeDto {
 
+    @NotBlank(message = "El id el del usuario no debe estar vacio")
     private Long userId;
+
+    @NotBlank(message = "El id el del post no debe estar vacio")
     private Long postId;
 }
