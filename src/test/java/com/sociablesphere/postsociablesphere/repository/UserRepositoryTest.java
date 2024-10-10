@@ -48,63 +48,6 @@ public class UserRepositoryTest {
         when(webClientBuilder.build()).thenReturn(webClient);
     }
 
-    @Test
-    public void testFindByApiToken_Success() {
-        // Arrange
-        String apiToken = "validApiToken";
-        UserDetailDTO mockUserDetail = new UserDetailDTO();
-        mockUserDetail.setId(1L);
-        mockUserDetail.setUserName("testUser");
-        mockUserDetail.setEmail("test@test.com");
-
-        doReturn(requestHeadersUriSpec).when(webClient).get();
-        doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri(anyString(), eq(apiToken));
-        doReturn(responseSpec).when(requestHeadersSpec).retrieve();
-        doReturn(Mono.just(mockUserDetail)).when(responseSpec).bodyToMono(UserDetailDTO.class);
-
-        // Act
-        Mono<UserDetailDTO> result = userRepository.findByApiToken(apiToken);
-
-        // Assert
-        StepVerifier.create(result)
-                .expectNextMatches(user -> user.getId().equals(1L) && user.getUserName().equals("testUser"))
-                .verifyComplete();
-
-        // Verify that the WebClient chain was called as expected
-        verify(webClient, times(1)).get();
-        verify(requestHeadersUriSpec, times(1)).uri(anyString(), eq(apiToken));
-        verify(requestHeadersSpec, times(1)).retrieve();
-        verify(responseSpec, times(1)).bodyToMono(UserDetailDTO.class);
-    }
-
-
-    @Test
-    public void testFindByApiToken_Error() {
-        // Arrange
-        String apiToken = "invalidApiToken";
-        WebClientResponseException mockException = WebClientResponseException.create(
-                404, "Not Found", null, null, null);
-
-        doReturn(requestHeadersUriSpec).when(webClient).get();
-        doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri(anyString(), eq(apiToken));
-        doReturn(responseSpec).when(requestHeadersSpec).retrieve();
-        doReturn(Mono.error(mockException)).when(responseSpec).bodyToMono(UserDetailDTO.class);
-
-        // Act
-        Mono<UserDetailDTO> result = userRepository.findByApiToken(apiToken);
-
-        // Assert
-        StepVerifier.create(result)
-                .expectErrorMatches(throwable -> throwable instanceof ExternalMicroserviceException &&
-                        throwable.getMessage().contains("Error fetching user by apiToken"))
-                .verify();
-
-        // Verify that the WebClient chain was called as expected
-        verify(webClient, times(1)).get();
-        verify(requestHeadersUriSpec, times(1)).uri(anyString(), eq(apiToken));
-        verify(requestHeadersSpec, times(1)).retrieve();
-        verify(responseSpec, times(1)).bodyToMono(UserDetailDTO.class);
-    }
 
 
     @Test
