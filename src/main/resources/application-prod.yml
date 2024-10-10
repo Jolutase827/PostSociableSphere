@@ -1,0 +1,22 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  application:
+    name: PostSociableSphere
+  r2dbc:
+    url: r2dbc:postgresql://socialsphere_root:socialsphere@postgresql-socialsphere.alwaysdata.net:5432/socialsphere_users
+    username: socialsphere_root
+    password: socialsphere
+  server:
+    port: 8081
+  logging:
+    level:
+      root: DEBUG
+  data:
+    r2dbc:
+      repositories:
+        enabled: true
+  sql:
+    init:
+      mode: never
