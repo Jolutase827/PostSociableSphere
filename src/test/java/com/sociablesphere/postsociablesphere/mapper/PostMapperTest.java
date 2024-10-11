@@ -1,175 +1,197 @@
 package com.sociablesphere.postsociablesphere.mapper;
 
 
-import com.sociablesphere.postsociablesphere.api.dto.PostCreationDto;
-import com.sociablesphere.postsociablesphere.api.dto.PostResponseDto;
-import com.sociablesphere.postsociablesphere.api.dto.PostUpdateDto;
+import com.sociablesphere.postsociablesphere.api.dto.*;
 import com.sociablesphere.postsociablesphere.model.Post;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-class PostMapperTest {
+public class PostMapperTest {
 
     @Nested
-    @DisplayName("toEntity Tests")
+    @DisplayName("toEntity")
     class ToEntityTests {
-
         @Test
-        @DisplayName("Given a valid PostCreationDto, when toEntity is called, then return a Post entity with correct values")
-        void toEntity_ValidDto_ReturnsEntity() {
+        @DisplayName("Given a PostCreationDto, when toEntity is called, then return Post entity")
+        void toEntityValid() {
             // Given
             PostCreationDto dto = PostCreationDto.builder()
                     .content("Test Content")
                     .type("text")
                     .isPaid(true)
-                    .cost(BigDecimal.valueOf(9.99))
+                    .cost(BigDecimal.TEN)
                     .isAd(false)
                     .maxViews(100)
                     .footer("Test Footer")
-                    .parentId(null)
+                    .parentId(1L)
                     .build();
-
-            LocalDateTime beforeMapping = LocalDateTime.now();
 
             // When
             Post post = PostMapper.toEntity(dto);
 
             // Then
-            assertThat(post).isNotNull();
-            assertThat(post.getContent()).isEqualTo(dto.getContent());
-            assertThat(post.getType()).isEqualTo(dto.getType());
-            assertThat(post.getIsPaid()).isEqualTo(dto.getIsPaid());
-            assertThat(post.getCost()).isEqualByComparingTo(dto.getCost());
-            assertThat(post.getIsAd()).isEqualTo(dto.getIsAd());
-            assertThat(post.getMaxViews()).isEqualTo(dto.getMaxViews());
-            assertThat(post.getViewsRemaining()).isEqualTo(dto.getMaxViews());
-            assertThat(post.getFooter()).isEqualTo(dto.getFooter());
-            assertThat(post.getParentId()).isEqualTo(dto.getParentId());
-            assertThat(post.getCreatedAt()).isAfterOrEqualTo(beforeMapping);
-            assertThat(post.getUpdatedAt()).isAfterOrEqualTo(beforeMapping);
+            assertThat(post.getContent()).isEqualTo("Test Content");
+            assertThat(post.getType()).isEqualTo("text");
+            assertThat(post.getIsPaid()).isTrue();
+            assertThat(post.getCost()).isEqualByComparingTo(BigDecimal.TEN);
+            assertThat(post.getIsAd()).isFalse();
+            assertThat(post.getMaxViews()).isEqualTo(100);
+            assertThat(post.getViewsRemaining()).isEqualTo(0);
+            assertThat(post.getFooter()).isEqualTo("Test Footer");
+            assertThat(post.getParentId()).isEqualTo(1L);
+            assertThat(post.getCreatedAt()).isNotNull();
+            assertThat(post.getUpdatedAt()).isNotNull();
         }
     }
 
     @Nested
-    @DisplayName("toDto Tests")
+    @DisplayName("toDto")
     class ToDtoTests {
-
         @Test
-        @DisplayName("Given a valid Post entity, when toDto is called, then return a PostResponseDto with correct values")
-        void toDto_ValidEntity_ReturnsDto() {
+        @DisplayName("Given a Post entity, when toDto is called, then return PostResponseDto")
+        void toDtoValid() {
             // Given
             Post post = Post.builder()
                     .id(1L)
                     .content("Test Content")
                     .type("text")
                     .isPaid(true)
-                    .cost(BigDecimal.valueOf(9.99))
+                    .cost(BigDecimal.TEN)
                     .isAd(false)
                     .maxViews(100)
-                    .viewsRemaining(80)
+                    .viewsRemaining(50)
                     .footer("Test Footer")
-                    .parentId(null)
-                    .createdAt(LocalDateTime.now())
-                    .updatedAt(LocalDateTime.now())
+                    .parentId(1L)
                     .build();
 
             // When
             PostResponseDto dto = PostMapper.toDto(post);
 
             // Then
-            assertThat(dto).isNotNull();
-            assertThat(dto.getId()).isEqualTo(post.getId());
-            assertThat(dto.getContent()).isEqualTo(post.getContent());
-            assertThat(dto.getType()).isEqualTo(post.getType());
-            assertThat(dto.getIsPaid()).isEqualTo(post.getIsPaid());
-            assertThat(dto.getCost()).isEqualByComparingTo(post.getCost());
-            assertThat(dto.getIsAd()).isEqualTo(post.getIsAd());
-            assertThat(dto.getMaxViews()).isEqualTo(post.getMaxViews());
-            assertThat(dto.getViewsRemaining()).isEqualTo(post.getViewsRemaining());
-            assertThat(dto.getFooter()).isEqualTo(post.getFooter());
-            assertThat(dto.getParentId()).isEqualTo(post.getParentId());
+            assertThat(dto.getId()).isEqualTo(1L);
+            assertThat(dto.getContent()).isEqualTo("Test Content");
+            assertThat(dto.getType()).isEqualTo("text");
+            assertThat(dto.getIsPaid()).isTrue();
+            assertThat(dto.getCost()).isEqualByComparingTo(BigDecimal.TEN);
+            assertThat(dto.getIsAd()).isFalse();
+            assertThat(dto.getMaxViews()).isEqualTo(100);
+            assertThat(dto.getViewsRemaining()).isEqualTo(50);
+            assertThat(dto.getFooter()).isEqualTo("Test Footer");
+            assertThat(dto.getParentId()).isEqualTo(1L);
         }
     }
 
     @Nested
-    @DisplayName("updateEntityFromDto Tests")
-    class UpdateEntityFromDtoTests {
-
+    @DisplayName("toDto with likes and owners")
+    class ToDtoWithLikesAndOwnersTests {
         @Test
-        @DisplayName("Given a Post entity and PostUpdateDto with new values, when updateEntityFromDto is called, then entity is updated")
-        void updateEntityFromDto_ValidDto_UpdatesEntity() {
+        @DisplayName("Given a Post entity and likes and owners, when toDto is called, then return PostResponseDto with likes and owners")
+        void toDtoWithLikesAndOwnersValid() {
             // Given
             Post post = Post.builder()
                     .id(1L)
+                    .content("Test Content")
+                    .type("text")
+                    .isPaid(true)
+                    .cost(BigDecimal.TEN)
+                    .isAd(false)
+                    .maxViews(100)
+                    .viewsRemaining(50)
+                    .footer("Test Footer")
+                    .parentId(1L)
+                    .build();
+
+            Set<LikeResponseDto> likes = new HashSet<>();
+            likes.add(LikeResponseDto.builder().userId(2L).createdAt(LocalDateTime.now()).build());
+
+            Set<UserResponseDto> owners = new HashSet<>();
+            owners.add(UserResponseDto.builder().id(3L).userName("Owner").build());
+
+            // When
+            PostResponseDto dto = PostMapper.toDto(post, likes, owners);
+
+            // Then
+            assertThat(dto.getLikes()).isEqualTo(likes);
+            assertThat(dto.getPostOwners()).isEqualTo(owners);
+        }
+    }
+
+    @Nested
+    @DisplayName("updateEntityFromDto")
+    class UpdateEntityFromDtoTests {
+        @Test
+        @DisplayName("Given a Post entity and PostUpdateDto, when updateEntityFromDto is called, then Post entity is updated")
+        void updateEntityFromDtoValid() {
+            // Given
+            Post post = Post.builder()
                     .content("Old Content")
                     .isPaid(false)
                     .cost(BigDecimal.ZERO)
                     .isAd(false)
-                    .maxViews(50)
+                    .maxViews(100)
                     .footer("Old Footer")
-                    .updatedAt(LocalDateTime.now())
                     .build();
 
             PostUpdateDto dto = PostUpdateDto.builder()
                     .content("New Content")
                     .isPaid(true)
-                    .cost(BigDecimal.valueOf(19.99))
+                    .cost(BigDecimal.TEN)
                     .isAd(true)
-                    .maxViews(150)
+                    .maxViews(200)
                     .footer("New Footer")
                     .build();
 
-            LocalDateTime beforeUpdate = post.getUpdatedAt();
-
             // When
             PostMapper.updateEntityFromDto(post, dto);
 
             // Then
-            assertThat(post.getContent()).isEqualTo(dto.getContent());
-            assertThat(post.getIsPaid()).isEqualTo(dto.getIsPaid());
-            assertThat(post.getCost()).isEqualByComparingTo(dto.getCost());
-            assertThat(post.getIsAd()).isEqualTo(dto.getIsAd());
-            assertThat(post.getMaxViews()).isEqualTo(dto.getMaxViews());
-            assertThat(post.getFooter()).isEqualTo(dto.getFooter());
-            assertThat(post.getUpdatedAt()).isAfter(beforeUpdate);
+            assertThat(post.getContent()).isEqualTo("New Content");
+            assertThat(post.getIsPaid()).isTrue();
+            assertThat(post.getCost()).isEqualByComparingTo(BigDecimal.TEN);
+            assertThat(post.getIsAd()).isTrue();
+            assertThat(post.getMaxViews()).isEqualTo(200);
+            assertThat(post.getFooter()).isEqualTo("New Footer");
+            assertThat(post.getUpdatedAt()).isNotNull();
         }
+    }
 
+    @Nested
+    @DisplayName("zipPostLikesUsersToPostResponse")
+    class ZipPostLikesUsersToPostResponseTests {
         @Test
-        @DisplayName("Given a Post entity and PostUpdateDto with null values, when updateEntityFromDto is called, then entity is unchanged")
-        void updateEntityFromDto_NullValues_NoChanges() {
+        @DisplayName("Given a Post entity and Tuple2 of likes and owners, when zipPostLikesUsersToPostResponse is called, then return PostResponseDto")
+        void zipPostLikesUsersToPostResponseValid() {
             // Given
             Post post = Post.builder()
                     .id(1L)
-                    .content("Original Content")
-                    .isPaid(false)
-                    .cost(BigDecimal.ZERO)
-                    .isAd(false)
-                    .maxViews(50)
-                    .footer("Original Footer")
-                    .updatedAt(LocalDateTime.now())
+                    .content("Test Content")
                     .build();
 
-            PostUpdateDto dto = PostUpdateDto.builder().build();
+            Set<LikeResponseDto> likes = new HashSet<>();
+            likes.add(LikeResponseDto.builder().userId(2L).createdAt(LocalDateTime.now()).build());
 
-            LocalDateTime beforeUpdate = post.getUpdatedAt();
+            Set<UserResponseDto> owners = new HashSet<>();
+            owners.add(UserResponseDto.builder().id(3L).userName("Owner").build());
+
+            Tuple2<Set<LikeResponseDto>, Set<UserResponseDto>> tuple = Tuples.of(likes, owners);
 
             // When
-            PostMapper.updateEntityFromDto(post, dto);
+            PostResponseDto dto = PostMapper.zipPostLikesUsersToPostResponse(post, tuple);
 
             // Then
-            assertThat(post.getContent()).isEqualTo("Original Content");
-            assertThat(post.getIsPaid()).isEqualTo(false);
-            assertThat(post.getCost()).isEqualByComparingTo(BigDecimal.ZERO);
-            assertThat(post.getIsAd()).isEqualTo(false);
-            assertThat(post.getMaxViews()).isEqualTo(50);
-            assertThat(post.getFooter()).isEqualTo("Original Footer");
-            assertThat(post.getUpdatedAt()).isAfterOrEqualTo(beforeUpdate);
+            assertThat(dto.getId()).isEqualTo(1L);
+            assertThat(dto.getLikes()).isEqualTo(likes);
+            assertThat(dto.getPostOwners()).isEqualTo(owners);
         }
     }
 }

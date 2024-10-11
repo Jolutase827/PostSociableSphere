@@ -3,8 +3,6 @@ package com.sociablesphere.postsociablesphere.service.like.impl;
 import com.sociablesphere.postsociablesphere.api.dto.LikeDto;
 import com.sociablesphere.postsociablesphere.api.dto.LikeResponseDto;
 import com.sociablesphere.postsociablesphere.exceptions.ExternalMicroserviceException;
-import com.sociablesphere.postsociablesphere.model.Like;
-import com.sociablesphere.postsociablesphere.model.Post;
 import com.sociablesphere.postsociablesphere.repository.LikeRepository;
 import com.sociablesphere.postsociablesphere.repository.PostRepository;
 import static com.sociablesphere.postsociablesphere.service.data.DataLikeServiceImplTest.*;
