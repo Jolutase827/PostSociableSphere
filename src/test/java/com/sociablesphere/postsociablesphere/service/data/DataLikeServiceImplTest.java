@@ -3,7 +3,7 @@ package com.sociablesphere.postsociablesphere.service.data;
 
 import com.sociablesphere.postsociablesphere.api.dto.LikeDto;
 import com.sociablesphere.postsociablesphere.api.dto.LikeResponseDto;
-import com.sociablesphere.postsociablesphere.model.Like;
+import com.sociablesphere.postsociablesphere.model.Likes;
 import com.sociablesphere.postsociablesphere.model.Post;
 
 import java.time.LocalDateTime;
@@ -18,12 +18,12 @@ public class DataLikeServiceImplTest {
             .postId(POST_ID)
             .build();
 
-    public static final Like.LikeId LIKE_ID = Like.LikeId.builder()
+    public static final Likes.LikeId LIKE_ID = Likes.LikeId.builder()
             .userId(USER_ID)
             .postId(POST_ID)
             .build();
 
-    public static final Like LIKE = Like.builder()
+    public static final Likes LIKE = Likes.builder()
             .id(LIKE_ID)
             .createdAt(LocalDateTime.now())
             .build();

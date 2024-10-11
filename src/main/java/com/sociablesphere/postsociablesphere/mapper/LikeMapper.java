@@ -26,8 +26,8 @@ public class LikeMapper {
                 .build();
     }
 
-    public static Like.LikeId createLikeId(LikeDto likeDto) {
-        return Like.LikeId.builder()
+    public static Likes.LikeId createLikeId(LikeDto likeDto) {
+        return Likes.LikeId.builder()
                 .userId(likeDto.getUserId())
                 .postId(likeDto.getPostId())
                 .build();

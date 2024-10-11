@@ -4,7 +4,7 @@ import com.sociablesphere.postsociablesphere.api.dto.LikeDto;
 import com.sociablesphere.postsociablesphere.api.dto.LikeResponseDto;
 import com.sociablesphere.postsociablesphere.exceptions.ExternalMicroserviceException;
 import com.sociablesphere.postsociablesphere.mapper.LikeMapper;
-import com.sociablesphere.postsociablesphere.model.Like;
+import com.sociablesphere.postsociablesphere.model.Likes;
 import com.sociablesphere.postsociablesphere.repository.LikeRepository;
 import com.sociablesphere.postsociablesphere.repository.PostRepository;
 import com.sociablesphere.postsociablesphere.service.like.LikeService;
@@ -33,7 +33,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public Mono<Long> performDislike(LikeDto likeDto) {
-        Like.LikeId likeId = LikeMapper.createLikeId(likeDto);
+        Likes.LikeId likeId = LikeMapper.createLikeId(likeDto);
         return likeRepository.findById(likeId)
                 .switchIfEmpty(Mono.error(new ExternalMicroserviceException("The user with the id " + likeId.getUserId() + " didn't like the post already")))
                 .flatMap(this::deleteLikeAndReturnPostId);
@@ -53,7 +53,7 @@ public class LikeServiceImpl implements LikeService {
 
 
     private Mono<Long> createLikeIfNotExists(LikeDto likeDto, Long postId) {
-        Like.LikeId likeId = LikeMapper.createLikeId(likeDto);
+        Likes.LikeId likeId = LikeMapper.createLikeId(likeDto);
         return likeRepository.existsById(likeId)
                 .flatMap(exists -> {
                     if (exists) {
@@ -65,15 +65,15 @@ public class LikeServiceImpl implements LikeService {
 
 
 
-    private Mono<Long> saveLike( Like.LikeId likeId, Long postId) {
-        Like like = Like.builder()
+    private Mono<Long> saveLike( Likes.LikeId likeId, Long postId) {
+        Likes like = Likes.builder()
                 .id(likeId)
                 .createdAt(LocalDateTime.now())
                 .build();
         return likeRepository.save(like).thenReturn(postId);
     }
 
-    private Mono<Long> deleteLikeAndReturnPostId(Like like) {
+    private Mono<Long> deleteLikeAndReturnPostId(Likes like) {
         return likeRepository.delete(like).thenReturn(like.getId().getPostId());
     }
 }
