@@ -65,7 +65,7 @@ public class PostServiceImpl implements PostService {
     private Mono<PostResponseDto> createNewPost(PostCreationDto postCreationDto, UserResponseDto user) {
         Post post = PostMapper.toEntity(postCreationDto);
         return postRepository.save(post)
-                .flatMap(savedPost -> postUserService.savePostUser(post.getId(),user.getId()).thenReturn(post))
+                .flatMap(savedPost -> postUserService.savePostUser(savedPost.getId(),user.getId()).thenReturn(savedPost))
                 .flatMap(this::buildPostResponseDto);
     }
 
@@ -74,13 +74,13 @@ public class PostServiceImpl implements PostService {
         return postRepository.save(existingPost);
     }
 
-    private Mono<Void> ensurePostExists(Long postId) {
+    private Mono<Boolean> ensurePostExists(Long postId) {
         return postRepository.existsById(postId)
                 .flatMap(exists -> {
                     if (!exists) {
                         return Mono.error(new ExternalMicroserviceException("The post with the id " + postId + " not exist"));
                     }
-                    return Mono.empty();
+                    return Mono.just(true);
                 });
     }
 

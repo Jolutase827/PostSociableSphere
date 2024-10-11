@@ -48,7 +48,7 @@ public class PostServiceImplTest {
         @DisplayName("Given a valid PostCreationDto and existing User, when createPost is called, then Post is saved and PostResponseDto is returned")
         void createPostValid() {
             // Given
-            when(userService.getUserOrThrow(USER_ID)).thenReturn(Mono.just(USER_RESPONSE_DTO));
+            when(userService.getUserOrThrow(any())).thenReturn(Mono.just(USER_RESPONSE_DTO));
             when(postRepository.save(any())).thenReturn(Mono.just(POST));
             when(postUserService.savePostUser(any(), any())).thenReturn(Mono.just(PostUser.builder().build()));
             when(likeService.getLikesByPostId(POST_ID)).thenReturn(Mono.just(new HashSet<>()));

@@ -12,8 +12,8 @@ public class LikeMapper {
         return Likes.builder()
                 .id( Likes.LikeId
                         .builder()
-                        .userId(dto.getPostId())
-                        .postId(dto.getUserId())
+                        .userId(dto.getUserId())
+                        .postId(dto.getPostId())
                         .build())
                 .createdAt(LocalDateTime.now())
                 .build();
