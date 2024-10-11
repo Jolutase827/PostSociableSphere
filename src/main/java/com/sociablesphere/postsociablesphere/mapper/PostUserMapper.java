@@ -6,11 +6,11 @@ import com.sociablesphere.postsociablesphere.model.PostUser;
 
 public class PostUserMapper {
 
-    public static PostUser toEntity(Post post, UserResponseDto user){
+    public static PostUser toEntity(Long postId, Long userId){
         return PostUser.builder()
                 .id(PostUser.PostUserId.builder()
-                        .postId(post.getId())
-                        .userId(user.getId())
+                        .postId(postId)
+                        .userId(userId)
                         .build())
                 .build();
     }

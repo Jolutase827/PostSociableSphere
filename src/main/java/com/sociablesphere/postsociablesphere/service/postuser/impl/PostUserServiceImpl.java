@@ -26,8 +26,8 @@ public class PostUserServiceImpl implements PostUserService {
     }
 
     @Override
-    public Mono<PostUser> savePostUser(Post post, UserResponseDto user) {
-        PostUser postUser = PostUserMapper.toEntity(post,user);
+    public Mono<PostUser> savePostUser(Long postId, Long userId) {
+        PostUser postUser = PostUserMapper.toEntity(postId,userId);
         return postUserRepository.save(postUser);
     }
 

@@ -3,7 +3,9 @@ package com.sociablesphere.postsociablesphere.api.controller;
 import com.sociablesphere.postsociablesphere.api.dto.*;
 import com.sociablesphere.postsociablesphere.response.service.PostResponseService;
 import com.sociablesphere.postsociablesphere.service.post.PostService;
+import com.sociablesphere.postsociablesphere.service.postuser.PostUserService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +14,14 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/v1/posts")
+@AllArgsConstructor
 public class PostController {
 
     private static final Logger logger = LoggerFactory.getLogger(PostController.class);
     private final PostService postService;
     private final PostResponseService postResponseService;
 
-    public PostController(PostService postService, PostResponseService postResponseService) {
-        this.postService = postService;
-        this.postResponseService = postResponseService;
-    }
+
 
     @PostMapping("/create")
     public Mono<ResponseEntity<PostResponseDto>> createPost(@Valid @RequestBody PostCreationDto postCreationDto) {

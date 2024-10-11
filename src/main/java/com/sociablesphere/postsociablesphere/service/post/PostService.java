@@ -15,4 +15,6 @@ public interface PostService {
     Mono<Void> deletePost(Long idPost);
 
     Mono<Post> getPostOrThrow(Long postId);
+
+    Mono<UserResponseDto> addOwner(NewOwnerDto newOwnerDto);
 }

@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 public interface PostUserService {
-    Mono<PostUser> savePostUser(Post post, UserResponseDto user);
+    Mono<PostUser> savePostUser(Long postId, Long userId);
     Mono<Void> deleteAllPostUserByPostId(Long postId);
     Flux<PostUser> findAllPostUserByPostId(Long postId);
 }

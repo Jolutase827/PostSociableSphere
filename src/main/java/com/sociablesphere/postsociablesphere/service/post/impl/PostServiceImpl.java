@@ -55,10 +55,17 @@ public class PostServiceImpl implements PostService {
                 .switchIfEmpty(Mono.error(new ExternalMicroserviceException("The post with the id " + postId + " not exist")));
     }
 
+    @Override
+    public Mono<UserResponseDto> addOwner(NewOwnerDto newOwnerDto) {
+        Mono<UserResponseDto> userResponseDtoMono = userService.getUserOrThrow(newOwnerDto.getUserId());
+        return postUserService.savePostUser(newOwnerDto.getPostId(), newOwnerDto.getUserId())
+                .then(userResponseDtoMono);
+    }
+
     private Mono<PostResponseDto> createNewPost(PostCreationDto postCreationDto, UserResponseDto user) {
         Post post = PostMapper.toEntity(postCreationDto);
         return postRepository.save(post)
-                .flatMap(savedPost -> postUserService.savePostUser(post,user).thenReturn(post))
+                .flatMap(savedPost -> postUserService.savePostUser(post.getId(),user.getId()).thenReturn(post))
                 .flatMap(this::buildPostResponseDto);
     }
 
