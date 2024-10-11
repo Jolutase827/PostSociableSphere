@@ -24,3 +24,4 @@ spring:
 users:
   url: http://localhost:8081
   get-by-id: /v1/users/
+  get-by-ids: /v1/users/usersByIds
