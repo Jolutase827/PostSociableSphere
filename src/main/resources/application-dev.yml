@@ -22,5 +22,5 @@ spring:
       mode: always
       schema-locations: classpath:schema.sql
 users:
-  url: https://localhost:8081
+  url: http://localhost:8081
   get-by-id: /users/
