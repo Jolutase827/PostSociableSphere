@@ -1,6 +1,7 @@
 package com.sociablesphere.postsociablesphere.service.post;
 
 import com.sociablesphere.postsociablesphere.api.dto.*;
+import com.sociablesphere.postsociablesphere.model.Post;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -13,5 +14,5 @@ public interface PostService {
 
     Mono<Void> deletePost(Long idPost);
 
-    Mono<UserResponseDto> addOwner(NewOwnerDto newOwner);
+    Mono<Post> getPostOrThrow(Long postId);
 }

@@ -19,6 +19,7 @@ public class PostUser {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class PostUserId {
         private Long postId;
         private Long userId;

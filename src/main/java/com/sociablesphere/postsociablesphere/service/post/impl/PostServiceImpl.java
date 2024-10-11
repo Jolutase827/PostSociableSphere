@@ -11,114 +11,104 @@ import com.sociablesphere.postsociablesphere.repository.LikeRepository;
 import com.sociablesphere.postsociablesphere.repository.PostRepository;
 import com.sociablesphere.postsociablesphere.repository.PostUserRepository;
 import com.sociablesphere.postsociablesphere.repository.UserRepository;
+import com.sociablesphere.postsociablesphere.service.like.LikeService;
 import com.sociablesphere.postsociablesphere.service.post.PostService;
+
+import com.sociablesphere.postsociablesphere.service.postuser.PostUserService;
+import com.sociablesphere.postsociablesphere.service.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.sociablesphere.postsociablesphere.mapper.PostMapper.zipPostLikesUsersToPostResponse;
+
 @Service
 @AllArgsConstructor
 public class PostServiceImpl implements PostService {
 
-    private  PostRepository postRepository;
-    private PostUserRepository postUserRepository;
-    private  UserRepository userRepository;
-    private LikeRepository likeRepository;
-
+    private PostRepository postRepository;
+    private PostUserService postUserService;
+    private final UserService userService;
+    private LikeService likeService;
 
 
     @Override
     public Mono<PostResponseDto> createPost(PostCreationDto postCreationDto) {
-        return userRepository.findById(postCreationDto.getUserId())
-                .switchIfEmpty(Mono.error(new InvalidCredentialsException("Usuario no encontrado")))
-                .flatMap(userResponseDto -> {
-                    Post post = PostMapper.toEntity(postCreationDto);
-                    post.setCreatedAt(LocalDateTime.now());
-                    post.setUpdatedAt(LocalDateTime.now());
-                    return postRepository.save(post)
-                            .flatMap(savedPost -> {
-                                PostUser postUser = new PostUser(
-                                        new PostUser.PostUserId(savedPost.getId(), userResponseDto.getId())
-                                );
-                                return postUserRepository.save(postUser)
-                                        .thenReturn(savedPost);
-                            });
-                })
-                .flatMap(this::buildPostResponseDto)
-                .onErrorMap(e -> new ExternalMicroserviceException("Error al crear el post: " + e.getMessage()));
+        return userService.getUserOrThrow(postCreationDto.getUserId())
+                .flatMap(user -> createNewPost(postCreationDto, user));
     }
-
 
     @Override
     public Mono<PostResponseDto> updatePost(Long id, PostUpdateDto postUpdateDto) {
-        return postRepository.findById(id)
-                .switchIfEmpty(Mono.error(new ExternalMicroserviceException("Post no encontrado")))
-                .flatMap(existingPost -> {
-                    PostMapper.updateEntityFromDto(existingPost, postUpdateDto);
-                    existingPost.setUpdatedAt(LocalDateTime.now());
-                    return postRepository.save(existingPost);
-                })
+        return getPostOrThrow(id)
+                .flatMap(existingPost -> updateExistingPost(existingPost, postUpdateDto))
                 .flatMap(this::buildPostResponseDto);
     }
 
     @Override
     public Mono<Void> deletePost(Long idPost) {
-        return postRepository.existsById(idPost)
+        return ensurePostExists(idPost)
+                .flatMap(exists -> deletePostData(idPost));
+    }
+
+
+    @Override
+    public Mono<Post> getPostOrThrow(Long postId) {
+        return postRepository.findById(postId)
+                .switchIfEmpty(Mono.error(new ExternalMicroserviceException("The post with the id " + postId + " not exist")));
+    }
+
+    private Mono<PostResponseDto> createNewPost(PostCreationDto postCreationDto, UserResponseDto user) {
+        Post post = PostMapper.toEntity(postCreationDto);
+        return postRepository.save(post)
+                .flatMap(savedPost -> postUserService.savePostUser(post,user).thenReturn(post))
+                .flatMap(this::buildPostResponseDto);
+    }
+
+    private Mono<Post> updateExistingPost(Post existingPost, PostUpdateDto postUpdateDto) {
+        PostMapper.updateEntityFromDto(existingPost, postUpdateDto);
+        return postRepository.save(existingPost);
+    }
+
+    private Mono<Void> ensurePostExists(Long postId) {
+        return postRepository.existsById(postId)
                 .flatMap(exists -> {
                     if (!exists) {
-                        return Mono.error(new ExternalMicroserviceException("Post no encontrado"));
-                    } else {
-                        Mono<Void> deletePostUsers = postUserRepository.deleteByIdPostId(idPost);
-                        Mono<Void> deleteLikes = likeRepository.deleteByIdPostId(idPost);
-                        Mono<Void> deletePost = postRepository.deleteById(idPost);
-                        return Mono.when(deletePostUsers, deleteLikes, deletePost);
+                        return Mono.error(new ExternalMicroserviceException("The post with the id " + postId + " not exist"));
                     }
+                    return Mono.empty();
                 });
     }
 
-    @Override
-    public Mono<UserResponseDto> addOwner(NewOwnerDto newOwner) {
-        return postRepository.findById(newOwner.getPostId())
-                .switchIfEmpty(Mono.error(new ExternalMicroserviceException("Post no encontrado")))
-                .flatMap(post -> userRepository.findById(newOwner.getUserId())
-                        .switchIfEmpty(Mono.error(new InvalidCredentialsException("Usuario no encontrado")))
-                        .flatMap(userResponseDto -> {
-                            PostUser postUser = new PostUser(
-                                    new PostUser.PostUserId(post.getId(), userResponseDto.getId())
-                            );
-                            return postUserRepository.save(postUser)
-                                    .thenReturn(userResponseDto);
-                        })
-                )
-                .onErrorMap(e -> new ExternalMicroserviceException("Error al agregar propietario: " + e.getMessage()));
+    private Mono<Void> deletePostData(Long postId) {
+        Mono<Void> deletePostUsers = postUserService.deleteAllPostUserByPostId(postId);
+        Mono<Void> deleteLikes = likeService.deleteAllLikesByPostId(postId);
+        Mono<Void> deletePost = postRepository.deleteById(postId);
+        return Mono.when(deletePostUsers, deleteLikes, deletePost);
     }
 
 
 
     private Mono<PostResponseDto> buildPostResponseDto(Post post) {
-        Mono<Set<LikeResponseDto>> likesMono = likeRepository.findByIdPostId(post.getId())
-                .map(LikeMapper::toResponseDto)
-                .collect(Collectors.toSet());
-
-        Mono<Set<UserResponseDto>> ownersMono = postUserRepository.findByIdPostId(post.getId())
-                .flatMap(postUser -> userRepository.findById(postUser.getId().getUserId()))
-                .collect(Collectors.toSet());
-
+        Mono<Set<LikeResponseDto>> likesMono = likeService.getLikesByPostId(post.getId());
+        Mono<Set<UserResponseDto>> ownersMono = getOwnersOfPosts(post);
         return Mono.zip(likesMono, ownersMono)
-                .map(tuple -> {
-                    Set<LikeResponseDto> likes = tuple.getT1();
-                    Set<UserResponseDto> owners = tuple.getT2();
-
-                    PostResponseDto responseDto = PostMapper.toDto(post);
-                    responseDto.setLikes(likes);
-                    responseDto.setPostOwners(owners);
-                    return responseDto;
-                });
+                .map(tuple -> zipPostLikesUsersToPostResponse(post, tuple));
     }
 
-}
 
+
+    private Mono<Set<UserResponseDto>> getOwnersOfPosts(Post post) {
+        return postUserService.findAllPostUserByPostId(post.getId())
+                .flatMap(postUser -> userService.getUserOrThrow(postUser.getId().getUserId()))
+                .collect(Collectors.toSet());
+    }
+
+
+
+}
