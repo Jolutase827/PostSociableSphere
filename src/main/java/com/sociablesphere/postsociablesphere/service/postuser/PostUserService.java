@@ -1,6 +1,5 @@
 package com.sociablesphere.postsociablesphere.service.postuser;
 
-import com.sociablesphere.postsociablesphere.api.dto.NewOwnerDto;
 import com.sociablesphere.postsociablesphere.api.dto.UserResponseDto;
 import com.sociablesphere.postsociablesphere.model.Post;
 import com.sociablesphere.postsociablesphere.model.PostUser;

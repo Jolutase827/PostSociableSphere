@@ -5,13 +5,11 @@ import com.sociablesphere.postsociablesphere.api.dto.LikeResponseDto;
 import com.sociablesphere.postsociablesphere.exceptions.ExternalMicroserviceException;
 import com.sociablesphere.postsociablesphere.mapper.LikeMapper;
 import com.sociablesphere.postsociablesphere.model.Like;
-import com.sociablesphere.postsociablesphere.model.Post;
 import com.sociablesphere.postsociablesphere.repository.LikeRepository;
 import com.sociablesphere.postsociablesphere.repository.PostRepository;
 import com.sociablesphere.postsociablesphere.service.like.LikeService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;

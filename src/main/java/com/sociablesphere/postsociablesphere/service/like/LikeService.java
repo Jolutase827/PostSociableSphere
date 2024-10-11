@@ -2,9 +2,7 @@ package com.sociablesphere.postsociablesphere.service.like;
 
 import com.sociablesphere.postsociablesphere.api.dto.LikeDto;
 import com.sociablesphere.postsociablesphere.api.dto.LikeResponseDto;
-import com.sociablesphere.postsociablesphere.model.Like;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Set;

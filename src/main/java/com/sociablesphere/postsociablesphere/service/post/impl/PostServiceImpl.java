@@ -2,15 +2,9 @@ package com.sociablesphere.postsociablesphere.service.post.impl;
 
 import com.sociablesphere.postsociablesphere.api.dto.*;
 import com.sociablesphere.postsociablesphere.exceptions.ExternalMicroserviceException;
-import com.sociablesphere.postsociablesphere.exceptions.InvalidCredentialsException;
-import com.sociablesphere.postsociablesphere.mapper.LikeMapper;
 import com.sociablesphere.postsociablesphere.mapper.PostMapper;
 import com.sociablesphere.postsociablesphere.model.Post;
-import com.sociablesphere.postsociablesphere.model.PostUser;
-import com.sociablesphere.postsociablesphere.repository.LikeRepository;
 import com.sociablesphere.postsociablesphere.repository.PostRepository;
-import com.sociablesphere.postsociablesphere.repository.PostUserRepository;
-import com.sociablesphere.postsociablesphere.repository.UserRepository;
 import com.sociablesphere.postsociablesphere.service.like.LikeService;
 import com.sociablesphere.postsociablesphere.service.post.PostService;
 
@@ -19,9 +13,7 @@ import com.sociablesphere.postsociablesphere.service.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 

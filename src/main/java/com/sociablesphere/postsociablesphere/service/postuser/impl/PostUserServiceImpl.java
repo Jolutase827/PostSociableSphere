@@ -1,6 +1,5 @@
 package com.sociablesphere.postsociablesphere.service.postuser.impl;
 
-import com.sociablesphere.postsociablesphere.api.dto.NewOwnerDto;
 import com.sociablesphere.postsociablesphere.api.dto.UserResponseDto;
 import com.sociablesphere.postsociablesphere.mapper.PostUserMapper;
 import com.sociablesphere.postsociablesphere.model.Post;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Set;
 
 @Service
 @AllArgsConstructor
