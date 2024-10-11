@@ -10,8 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table("likes")
-public class Like {
+public class Likes {
 
     @Id
     private LikeId id;

@@ -5,11 +5,12 @@ import com.sociablesphere.postsociablesphere.api.dto.UserResponseDto;
 import com.sociablesphere.postsociablesphere.exceptions.ExternalMicroserviceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
-@Repository
+@Service
 public class UserRepository {
 
     private final WebClient.Builder webClientBuilder;

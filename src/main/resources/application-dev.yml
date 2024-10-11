@@ -23,4 +23,4 @@ spring:
       schema-locations: classpath:schema.sql
 users:
   url: http://localhost:8081
-  get-by-id: /users/
+  get-by-id: /v1/users/

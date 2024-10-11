@@ -2,15 +2,15 @@ package com.sociablesphere.postsociablesphere.mapper;
 
 import com.sociablesphere.postsociablesphere.api.dto.LikeDto;
 import com.sociablesphere.postsociablesphere.api.dto.LikeResponseDto;
-import com.sociablesphere.postsociablesphere.model.Like;
+import com.sociablesphere.postsociablesphere.model.Likes;
 
 import java.time.LocalDateTime;
 
 public class LikeMapper {
 
-    public static Like toEntity(LikeDto dto) {
-        return Like.builder()
-                .id( Like.LikeId
+    public static Likes toEntity(LikeDto dto) {
+        return Likes.builder()
+                .id( Likes.LikeId
                         .builder()
                         .userId(dto.getPostId())
                         .postId(dto.getUserId())
@@ -19,10 +19,10 @@ public class LikeMapper {
                 .build();
     }
 
-    public static LikeResponseDto toResponseDto(Like like) {
+    public static LikeResponseDto toResponseDto(Likes likes) {
         return LikeResponseDto.builder()
-                .userId(like.getId().getUserId())
-                .createdAt(like.getCreatedAt())
+                .userId(likes.getId().getUserId())
+                .createdAt(likes.getCreatedAt())
                 .build();
     }
 

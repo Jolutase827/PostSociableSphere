@@ -3,7 +3,7 @@ package com.sociablesphere.postsociablesphere.mapper;
 
 import com.sociablesphere.postsociablesphere.api.dto.LikeDto;
 import com.sociablesphere.postsociablesphere.api.dto.LikeResponseDto;
-import com.sociablesphere.postsociablesphere.model.Like;
+import com.sociablesphere.postsociablesphere.model.Likes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.*;
 
-class LikeMapperTest {
+class LikesMapperTest {
 
     @Nested
     @DisplayName("toEntity Tests")
@@ -30,14 +30,14 @@ class LikeMapperTest {
             LocalDateTime beforeMapping = LocalDateTime.now();
 
             // When
-            Like like = LikeMapper.toEntity(likeDto);
+            Likes likes = LikeMapper.toEntity(likeDto);
 
             // Then
-            assertThat(like).isNotNull();
-            assertThat(like.getId()).isNotNull();
-            assertThat(like.getId().getUserId()).isEqualTo(likeDto.getPostId()); // Note the mapping
-            assertThat(like.getId().getPostId()).isEqualTo(likeDto.getUserId()); // Note the mapping
-            assertThat(like.getCreatedAt()).isAfterOrEqualTo(beforeMapping);
+            assertThat(likes).isNotNull();
+            assertThat(likes.getId()).isNotNull();
+            assertThat(likes.getId().getUserId()).isEqualTo(likeDto.getPostId()); // Note the mapping
+            assertThat(likes.getId().getPostId()).isEqualTo(likeDto.getUserId()); // Note the mapping
+            assertThat(likes.getCreatedAt()).isAfterOrEqualTo(beforeMapping);
         }
     }
 
@@ -49,24 +49,24 @@ class LikeMapperTest {
         @DisplayName("Given a valid Like entity, when toResponseDto is called, then return a LikeResponseDto with correct values")
         void toResponseDto_ValidEntity_ReturnsDto() {
             // Given
-            Like.LikeId likeId = Like.LikeId.builder()
+            Likes.LikeId likeId = Likes.LikeId.builder()
                     .userId(2L)
                     .postId(1L)
                     .build();
 
             LocalDateTime createdAt = LocalDateTime.now();
 
-            Like like = Like.builder()
+            Likes likes = Likes.builder()
                     .id(likeId)
                     .createdAt(createdAt)
                     .build();
 
             // When
-            LikeResponseDto likeResponseDto = LikeMapper.toResponseDto(like);
+            LikeResponseDto likeResponseDto = LikeMapper.toResponseDto(likes);
 
             // Then
             assertThat(likeResponseDto).isNotNull();
-            assertThat(likeResponseDto.getUserId()).isEqualTo(like.getId().getUserId());
+            assertThat(likeResponseDto.getUserId()).isEqualTo(likes.getId().getUserId());
             assertThat(likeResponseDto.getCreatedAt()).isAfterOrEqualTo(createdAt);
         }
     }

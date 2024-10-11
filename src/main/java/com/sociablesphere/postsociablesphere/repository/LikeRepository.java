@@ -1,17 +1,17 @@
 package com.sociablesphere.postsociablesphere.repository;
 
-import com.sociablesphere.postsociablesphere.model.Like;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import com.sociablesphere.postsociablesphere.model.Likes;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface LikeRepository extends ReactiveCrudRepository<Like, Like.LikeId> {
+public interface LikeRepository extends R2dbcRepository<Likes, Likes.LikeId> {
 
-    Mono<Like> findById(Like.LikeId id);
+    Mono<Likes> findById(Likes.LikeId id);
 
-    Flux<Like> findByIdPostId(Long postId);
+    Flux<Likes> findByIdPostId(Long postId);
 
     Mono<Void> deleteByIdPostId(Long postId);
 }

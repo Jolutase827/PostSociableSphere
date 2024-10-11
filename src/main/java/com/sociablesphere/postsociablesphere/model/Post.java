@@ -13,8 +13,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table("posts")
-@PostValidationConstraint
 public class Post {
 
     @Id
@@ -23,12 +21,10 @@ public class Post {
     private String content;
     private String type;
 
-    @NotNull
-    private Boolean isPaid; //is true cost no puede estar nulo o negativo o cero y is ad no puede ser true
+    private Boolean isPaid;
     private BigDecimal cost;
 
-    @NotNull
-    private Boolean isAd; //is true maxviews no puede ser negativo no nulo o cero
+    private Boolean isAd;
     private Integer maxViews;
     private Integer viewsRemaining;
     private String footer;
