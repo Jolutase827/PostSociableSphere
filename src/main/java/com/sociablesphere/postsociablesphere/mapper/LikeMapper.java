@@ -10,27 +10,17 @@ public class LikeMapper {
 
     public static Likes toEntity(LikeDto dto) {
         return Likes.builder()
-                .id( Likes.LikeId
-                        .builder()
-                        .userId(dto.getUserId())
-                        .postId(dto.getPostId())
-                        .build())
+                .userId(dto.getUserId())
+                .postId(dto.getPostId())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
 
     public static LikeResponseDto toResponseDto(Likes likes) {
         return LikeResponseDto.builder()
-                .userId(likes.getId().getUserId())
+                .userId(likes.getUserId())
                 .createdAt(likes.getCreatedAt())
                 .build();
     }
 
-    public static Likes.LikeId createLikeId(LikeDto likeDto) {
-        return Likes.LikeId.builder()
-                .userId(likeDto.getUserId())
-                .postId(likeDto.getPostId())
-                .build();
-    }
 }
-

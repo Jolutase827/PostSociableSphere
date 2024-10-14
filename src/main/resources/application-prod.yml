@@ -8,9 +8,6 @@ spring:
     url: r2dbc:postgresql://jse:socialsphere@postgresql-jse.alwaysdata.net:5432/jse_post
     username: jse
     password: socialsphere
-  logging:
-    level:
-      root: DEBUG
   data:
     r2dbc:
       repositories:

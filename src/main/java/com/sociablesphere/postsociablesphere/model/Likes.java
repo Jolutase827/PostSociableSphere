@@ -13,15 +13,8 @@ import java.time.LocalDateTime;
 public class Likes {
 
     @Id
-    private LikeId id;
+    private Long postId;
+    private Long userId;
     private LocalDateTime createdAt;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    public static class LikeId {
-        private Long postId;
-        private Long userId;
-    }
 }

@@ -4,8 +4,6 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,14 +11,7 @@ import java.time.LocalDateTime;
 public class PostUser {
 
     @Id
-    private PostUserId id;
+    private Long postId;
+    private Long userId;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    public static class PostUserId {
-        private Long postId;
-        private Long userId;
-    }
 }
