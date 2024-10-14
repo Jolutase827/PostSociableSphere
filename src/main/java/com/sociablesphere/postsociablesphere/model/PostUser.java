@@ -4,6 +4,8 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,6 +13,7 @@ import org.springframework.data.relational.core.mapping.Table;
 public class PostUser {
 
     @Id
+    private Long id;
     private Long postId;
     private Long userId;
 

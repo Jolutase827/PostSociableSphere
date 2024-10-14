@@ -13,8 +13,10 @@ import java.time.LocalDateTime;
 public class Likes {
 
     @Id
+    private Long id;
     private Long postId;
     private Long userId;
     private LocalDateTime createdAt;
+
 
 }
