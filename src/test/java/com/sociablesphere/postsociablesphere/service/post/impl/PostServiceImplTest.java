@@ -160,5 +160,106 @@ public class PostServiceImplTest {
             verify(postRepository).existsById(POST_ID);
         }
     }
+
+    @Nested
+    @DisplayName("Add Owner")
+    class AddOwnerTests {
+
+        @Test
+        @DisplayName("Given a valid NewOwnerDto, when addOwner is called, the owner is added and UserResponseDto is returned")
+        void addOwnerValid() {
+            Long postId = 123L;
+            Long userId = 456L;
+            NewOwnerDto newOwnerDto = new NewOwnerDto(postId, userId);
+
+            UserResponseDto userResponseDto = UserResponseDto.builder()
+                    .id(userId)
+                    .userName("user123")
+                    .name("John")
+                    .lastName("Doe")
+                    .email("user@example.com")
+                    .photo("photo_url")
+                    .description("Test description")
+                    .role("Admin")
+                    .build();
+
+            when(userService.getUserOrThrow(userId)).thenReturn(Mono.just(userResponseDto));
+            when(postUserService.savePostUser(postId, userId)).thenReturn(Mono.empty());
+
+            Mono<UserResponseDto> result = postService.addOwner(newOwnerDto);
+
+            StepVerifier.create(result)
+                    .assertNext(response -> {
+                        // Verifica que el UserResponseDto retornado tiene todos los campos esperados
+                        assertThat(response.getId()).isEqualTo(userId);
+                        assertThat(response.getUserName()).isEqualTo("user123");
+                        assertThat(response.getName()).isEqualTo("John");
+                        assertThat(response.getLastName()).isEqualTo("Doe");
+                        assertThat(response.getEmail()).isEqualTo("user@example.com");
+                        assertThat(response.getPhoto()).isEqualTo("photo_url");
+                        assertThat(response.getDescription()).isEqualTo("Test description");
+                        assertThat(response.getRole()).isEqualTo("Admin");
+                    })
+                    .verifyComplete();
+
+            verify(userService).getUserOrThrow(userId);
+            verify(postUserService).savePostUser(postId, userId);
+        }
+
+        @Test
+        @DisplayName("Given a failure in userService, when addOwner is called, an error is returned")
+        void addOwnerUserServiceError() {
+            Long postId = 1L;
+            Long userId = 1L;
+            NewOwnerDto newOwnerDto = new NewOwnerDto(postId, userId);
+
+            when(userService.getUserOrThrow(userId))
+                    .thenReturn(Mono.error(new RuntimeException("User service failed")));
+
+            Mono<UserResponseDto> result = postService.addOwner(newOwnerDto);
+
+            StepVerifier.create(result)
+                    .expectErrorMatches(throwable ->
+                            throwable instanceof RuntimeException &&
+                                    throwable.getMessage().equals("User service failed"))
+                    .verify();
+
+            verify(userService).getUserOrThrow(userId);
+            verify(postUserService, never()).savePostUser(anyLong(), anyLong());
+        }
+
+        @Test
+        @DisplayName("Given a failure in postUserService, when addOwner is called, an error is returned")
+        void addOwnerPostUserServiceError() {
+            Long postId = 123L;
+            Long userId = 456L;
+            NewOwnerDto newOwnerDto = new NewOwnerDto(postId, userId);
+
+            UserResponseDto userResponseDto = UserResponseDto.builder()
+                    .id(userId)
+                    .userName("user123")
+                    .name("John")
+                    .lastName("Doe")
+                    .email("user@example.com")
+                    .photo("photo_url")
+                    .description("Test description")
+                    .role("Admin")
+                    .build();
+
+            when(userService.getUserOrThrow(userId)).thenReturn(Mono.just(userResponseDto));
+            when(postUserService.savePostUser(postId, userId)).thenReturn(Mono.error(new RuntimeException("PostUser service failed")));
+
+            Mono<UserResponseDto> result = postService.addOwner(newOwnerDto);
+
+            StepVerifier.create(result)
+                    .expectErrorMatches(throwable ->
+                            throwable instanceof RuntimeException &&
+                                    throwable.getMessage().equals("PostUser service failed"))
+                    .verify();
+
+            verify(userService).getUserOrThrow(userId);
+            verify(postUserService).savePostUser(postId, userId);
+        }
+    }
 }
 
