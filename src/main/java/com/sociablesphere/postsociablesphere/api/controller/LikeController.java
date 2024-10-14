@@ -28,6 +28,7 @@ public class LikeController {
 
     @PostMapping("/like")
     public Mono<ResponseEntity<Void>> performLike(@Valid @RequestBody LikeDto likeDto) {
+        logger.info("Performing LIKE by user with ID: {}", likeDto.getUserId());
         return likeService.performLike(likeDto)
                 .flatMap(likesCount -> likeResponseService.buildLikeResponse(likeDto.getPostId(), likeDto.getUserId()))
                 .doOnSuccess(response -> logger.info("Post {} liked successfully by user {}", likeDto.getPostId(), likeDto.getUserId()));
@@ -35,6 +36,7 @@ public class LikeController {
 
     @PostMapping("/dislike")
     public Mono<ResponseEntity<Void>> performDislike(@Valid @RequestBody LikeDto likeDto) {
+        logger.info("Performing DISLIKE by user with ID: {}", likeDto.getUserId());
         return likeService.performDislike(likeDto)
                 .flatMap(dislikesCount -> likeResponseService.buildDislikeResponse(likeDto.getPostId(), likeDto.getUserId()))
                 .doOnSuccess(response -> logger.info("Post {} disliked successfully by user {}", likeDto.getPostId(), likeDto.getUserId()));
