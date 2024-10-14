@@ -1,8 +1,7 @@
 package com.sociablesphere.postsociablesphere.api.controller;
 
 import com.sociablesphere.postsociablesphere.api.dto.LikeDto;
-import com.sociablesphere.postsociablesphere.response.service.LikeResponseService;
-import com.sociablesphere.postsociablesphere.service.like.LikeService;
+import com.sociablesphere.postsociablesphere.response.logic.LikeServiceLogic;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,19 +18,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class LikesControllerTest {
+class LikeControllerTest {
 
     @Mock
-    private LikeService likeService;
-
-    @Mock
-    private LikeResponseService likeResponseService;
+    private LikeServiceLogic likeServiceLogic;
 
     @InjectMocks
     private LikeController likeController;
 
     @Test
-    @DisplayName("Given valid LikeDto, when performLike is called, then return ResponseEntity with created status")
+    @DisplayName("Given valid LikeDto, when performLike is called, then return ResponseEntity with success status")
     void performLikeSuccess() {
         // Given
         LikeDto likeDto = LikeDto.builder()
@@ -39,23 +35,24 @@ class LikesControllerTest {
                 .userId(2L)
                 .build();
 
-        when(likeService.performLike(likeDto)).thenReturn(Mono.just(10L));
-        when(likeResponseService.buildLikeResponse(1L, 2L)).thenReturn(Mono.just(ResponseEntity.status(HttpStatus.CREATED).<Void>build()));
+        when(likeServiceLogic.performLikeAndBuildResponse(likeDto))
+                .thenReturn(Mono.just(ResponseEntity.ok().build()));
 
         // When
         Mono<ResponseEntity<Void>> result = likeController.performLike(likeDto);
 
         // Then
         StepVerifier.create(result)
-                .assertNext(response -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED))
+                .assertNext(response -> {
+                    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                })
                 .verifyComplete();
 
-        verify(likeService).performLike(likeDto);
-        verify(likeResponseService).buildLikeResponse(1L, 2L);
+        verify(likeServiceLogic).performLikeAndBuildResponse(likeDto);
     }
 
     @Test
-    @DisplayName("Given valid LikeDto, when performDislike is called, then return ResponseEntity with no content")
+    @DisplayName("Given valid LikeDto, when performDislike is called, then return ResponseEntity with success status")
     void performDislikeSuccess() {
         // Given
         LikeDto likeDto = LikeDto.builder()
@@ -63,18 +60,19 @@ class LikesControllerTest {
                 .userId(2L)
                 .build();
 
-        when(likeService.performDislike(likeDto)).thenReturn(Mono.just(5L));
-        when(likeResponseService.buildDislikeResponse(1L, 2L)).thenReturn(Mono.just(ResponseEntity.noContent().<Void>build()));
+        when(likeServiceLogic.performDislikeAndBuildResponse(likeDto))
+                .thenReturn(Mono.just(ResponseEntity.ok().build()));
 
         // When
         Mono<ResponseEntity<Void>> result = likeController.performDislike(likeDto);
 
         // Then
         StepVerifier.create(result)
-                .assertNext(response -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT))
+                .assertNext(response -> {
+                    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                })
                 .verifyComplete();
 
-        verify(likeService).performDislike(likeDto);
-        verify(likeResponseService).buildDislikeResponse(1L, 2L);
+        verify(likeServiceLogic).performDislikeAndBuildResponse(likeDto);
     }
 }
