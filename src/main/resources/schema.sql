@@ -1,28 +1,33 @@
 -- Tabla posts
 CREATE TABLE Post (
-    id BIGINT PRIMARY KEY NOT NULL,
-    content TEXT NOT NULL,
-    type VARCHAR NOT NULL CHECK (type IN ('text', 'image', 'video')),
-    is_paid BOOLEAN DEFAULT FALSE,
-    cost NUMERIC(10,2) NULL,
-    is_ad BOOLEAN DEFAULT FALSE,
-    max_views INTEGER NULL,
-    views_remaining INTEGER NULL,
-    footer TEXT NULL,
-    parent_id BIGINT REFERENCES Post(id),
-    likes INTEGER DEFAULT 0
+    id BIGSERIAL PRIMARY KEY,
+    content TEXT,
+    type VARCHAR(255),
+    is_paid BOOLEAN,
+    cost NUMERIC(10, 2),
+    is_ad BOOLEAN,
+    max_views INTEGER,
+    views_remaining INTEGER,
+    footer TEXT,
+    parent_id BIGINT,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    updated_at TIMESTAMP WITHOUT TIME ZONE
 );
+
 
 -- Tabla post_users (Relación muchos a muchos entre posts y usuarios)
-CREATE TABLE PostUser (
-    post_id BIGINT REFERENCES Post(id),
-    user_id BIGINT,
-    PRIMARY KEY (post_id, user_id)
+CREATE TABLE Likes (
+    id BIGSERIAL PRIMARY KEY,
+    post_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE
 );
 
+
 -- Tabla likes (Para registrar los likes de los usuarios a los posts)
-CREATE TABLE Likes (
-    post_id BIGINT REFERENCES Post(id),
-    user_id BIGINT,
-    PRIMARY KEY (post_id, user_id)
+CREATE TABLE PostUser (
+    id BIGSERIAL PRIMARY KEY,
+    post_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL
 );
+

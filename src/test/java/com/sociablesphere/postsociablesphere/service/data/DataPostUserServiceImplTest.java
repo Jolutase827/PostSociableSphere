@@ -27,10 +27,9 @@ public class DataPostUserServiceImplTest {
             .build();
 
     public static final PostUser POST_USER = PostUser.builder()
-            .id(PostUser.PostUserId.builder()
+                    .id(2L)
                     .postId(POST_ID)
                     .userId(USER_ID)
-                    .build())
-            .build();
+                    .build();
 }
 

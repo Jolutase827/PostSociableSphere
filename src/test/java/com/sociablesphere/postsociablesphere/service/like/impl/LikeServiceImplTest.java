@@ -41,7 +41,7 @@ public class LikeServiceImplTest {
         void performLikeValid() {
             // Given
             when(postRepository.findById(POST_ID)).thenReturn(Mono.just(POST));
-            when(likeRepository.existsById(LIKE_ID)).thenReturn(Mono.just(false));
+            when(likeRepository.existsById(anyLong())).thenReturn(Mono.just(false));
             when(likeRepository.save(any())).thenReturn(Mono.just(LIKE));
 
             // When
@@ -53,7 +53,7 @@ public class LikeServiceImplTest {
                     .verifyComplete();
 
             verify(postRepository).findById(POST_ID);
-            verify(likeRepository).existsById(LIKE_ID);
+            verify(likeRepository).existsById(anyLong());
             verify(likeRepository).save(any());
         }
 
@@ -81,7 +81,7 @@ public class LikeServiceImplTest {
         void performLikeAlreadyLiked() {
             // Given
             when(postRepository.findById(POST_ID)).thenReturn(Mono.just(POST));
-            when(likeRepository.existsById(LIKE_ID)).thenReturn(Mono.just(true));
+            when(likeRepository.existsById((Long) any())).thenReturn(Mono.just(true));
 
             // When
             Mono<Long> result = likeService.performLike(LIKE_DTO);
@@ -94,7 +94,7 @@ public class LikeServiceImplTest {
                     .verify();
 
             verify(postRepository).findById(POST_ID);
-            verify(likeRepository).existsById(LIKE_ID);
+            verify(likeRepository).existsById(anyLong());
         }
     }
 
@@ -105,8 +105,8 @@ public class LikeServiceImplTest {
         @DisplayName("Given a valid LikeDto where Like exists, when performDislike is called, then Like is deleted and postId is returned")
         void performDislikeValid() {
             // Given
-            when(likeRepository.findById(LIKE_ID)).thenReturn(Mono.just(LIKE));
-            when(likeRepository.delete(LIKE)).thenReturn(Mono.empty());
+            when(likeRepository.findById(2L)).thenReturn(Mono.just(LIKE));
+            when(likeRepository.deleteById(2L)).thenReturn(Mono.empty());
 
             // When
             Mono<Long> result = likeService.performDislike(LIKE_DTO);
@@ -116,15 +116,15 @@ public class LikeServiceImplTest {
                     .expectNext(POST_ID)
                     .verifyComplete();
 
-            verify(likeRepository).findById(LIKE_ID);
-            verify(likeRepository).delete(LIKE);
+            verify(likeRepository).findById(2L);
+            verify(likeRepository).deleteById(2L);
         }
 
         @Test
         @DisplayName("Given a LikeDto where Like does not exist, when performDislike is called, then ExternalMicroserviceException is thrown")
         void performDislikeNotLiked() {
             // Given
-            when(likeRepository.findById(LIKE_ID)).thenReturn(Mono.empty());
+            when(likeRepository.findById(anyLong())).thenReturn(Mono.empty());
 
             // When
             Mono<Long> result = likeService.performDislike(LIKE_DTO);
@@ -136,7 +136,7 @@ public class LikeServiceImplTest {
                                     throwable.getMessage().equals("The user with the id " + USER_ID + " didn't like the post already"))
                     .verify();
 
-            verify(likeRepository).findById(LIKE_ID);
+            verify(likeRepository).findById(anyLong());
         }
     }
 

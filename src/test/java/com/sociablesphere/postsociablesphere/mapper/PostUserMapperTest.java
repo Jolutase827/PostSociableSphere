@@ -18,7 +18,7 @@ public class PostUserMapperTest {
         PostUser postUser = PostUserMapper.toEntity(postId, userId);
 
         // Then
-        assertThat(postUser.getId().getPostId()).isEqualTo(postId);
-        assertThat(postUser.getId().getUserId()).isEqualTo(userId);
+        assertThat(postUser.getPostId()).isEqualTo(postId);
+        assertThat(postUser.getUserId()).isEqualTo(userId);
     }
 }

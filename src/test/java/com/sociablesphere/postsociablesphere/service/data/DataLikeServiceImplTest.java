@@ -14,17 +14,16 @@ public class DataLikeServiceImplTest {
     public static final Long POST_ID = Math.abs(new Random().nextLong());
 
     public static final LikeDto LIKE_DTO = LikeDto.builder()
+            .id(2L)
             .userId(USER_ID)
             .postId(POST_ID)
             .build();
 
-    public static final Likes.LikeId LIKE_ID = Likes.LikeId.builder()
-            .userId(USER_ID)
-            .postId(POST_ID)
-            .build();
 
     public static final Likes LIKE = Likes.builder()
-            .id(LIKE_ID)
+            .id(2L)
+            .userId(USER_ID)
+            .postId(POST_ID)
             .createdAt(LocalDateTime.now())
             .build();
 

@@ -16,5 +16,4 @@ public class PostUser {
     private Long id;
     private Long postId;
     private Long userId;
-
 }

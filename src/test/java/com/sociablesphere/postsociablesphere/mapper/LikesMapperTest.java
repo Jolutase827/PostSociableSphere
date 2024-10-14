@@ -30,9 +30,9 @@ public class LikesMapperTest {
 
             // Then
             assertThat(likes).isNotNull();
-            assertThat(likes.getId()).isNotNull();
-            assertThat(likes.getId().getUserId()).isEqualTo(likeDto.getUserId()); // Note the mapping
-            assertThat(likes.getId().getPostId()).isEqualTo(likeDto.getPostId()); // Note the mapping
+            assertThat(likes.getId()).isNull();
+            assertThat(likes.getUserId()).isEqualTo(likeDto.getUserId());
+            assertThat(likes.getPostId()).isEqualTo(likeDto.getPostId());
         }
     }
 
@@ -43,14 +43,13 @@ public class LikesMapperTest {
         @DisplayName("Given a Like entity, when toResponseDto is called, then return LikeResponseDto")
         void toResponseDtoValid() {
             // Given
-            Likes.LikeId likeId = Likes.LikeId.builder()
-                    .userId(2L)
-                    .postId(1L)
-                    .build();
+
             LocalDateTime createdAt = LocalDateTime.now();
 
             Likes likes = Likes.builder()
-                    .id(likeId)
+                    .id(1L)
+                    .userId(2L)
+                    .postId(1L)
                     .createdAt(createdAt)
                     .build();
 
@@ -59,7 +58,7 @@ public class LikesMapperTest {
 
             // Then
             assertThat(likeResponseDto).isNotNull();
-            assertThat(likeResponseDto.getUserId()).isEqualTo(likes.getId().getUserId());
+            assertThat(likeResponseDto.getUserId()).isEqualTo(likes.getUserId());
             assertThat(likeResponseDto.getCreatedAt()).isAfterOrEqualTo(createdAt);
             LikeResponseDto responseDto = LikeMapper.toResponseDto(likes);
 
@@ -79,7 +78,7 @@ public class LikesMapperTest {
                     .build();
 
             // When
-            Likes.LikeId likeId = LikeMapper.createLikeId(likeDto);
+            Likes likeId = LikeMapper.toEntity(likeDto);
 
             // Then
             assertThat(likeId.getUserId()).isEqualTo(1L);
