@@ -7,9 +7,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface LikeRepository extends R2dbcRepository<Likes, Likes.LikeId> {
+public interface LikeRepository extends R2dbcRepository<Likes, Long> {
 
-    Mono<Likes> findById(Likes.LikeId id);
 
     Flux<Likes> findByIdPostId(Long postId);
 

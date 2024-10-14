@@ -104,7 +104,7 @@ public class PostServiceImpl implements PostService {
 
     private Mono<Set<UserResponseDto>> getOwnersOfPosts(Post post) {
         return postUserService.findAllPostUserByPostId(post.getId())
-                .flatMap(postUser -> userService.getUserOrThrow(postUser.getId().getUserId()))
+                .flatMap(postUser -> userService.getUserOrThrow(postUser.getUserId()))
                 .collect(Collectors.toSet());
     }
 

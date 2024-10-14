@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,14 +27,13 @@ public class LikeServiceImpl implements LikeService {
     public Mono<Long> performLike(LikeDto likeDto) {
         return postRepository.findById(likeDto.getPostId())
                 .switchIfEmpty(Mono.error(new ExternalMicroserviceException("The post with the id " + likeDto.getPostId() + " does not exist")))
-                .flatMap(post -> createLikeIfNotExists(likeDto, post.getId()));
+                .flatMap(post -> createLikeIfNotExists(likeDto));
     }
 
     @Override
     public Mono<Long> performDislike(LikeDto likeDto) {
-        Likes.LikeId likeId = LikeMapper.createLikeId(likeDto);
-        return likeRepository.findById(likeId)
-                .switchIfEmpty(Mono.error(new ExternalMicroserviceException("The user with the id " + likeId.getUserId() + " didn't like the post already")))
+        return likeRepository.findById(likeDto.getId())
+                .switchIfEmpty(Mono.error(new ExternalMicroserviceException("The user with the id " + likeDto.getUserId() + " didn't like the post already")))
                 .flatMap(this::deleteLikeAndReturnPostId);
     }
 
@@ -52,28 +50,24 @@ public class LikeServiceImpl implements LikeService {
     }
 
 
-    private Mono<Long> createLikeIfNotExists(LikeDto likeDto, Long postId) {
-        Likes.LikeId likeId = LikeMapper.createLikeId(likeDto);
-        return likeRepository.existsById(likeId)
+    private Mono<Long> createLikeIfNotExists(LikeDto likeDto) {
+        return likeRepository.existsById(likeDto.getId())
                 .flatMap(exists -> {
                     if (exists) {
-                        return Mono.error(new ExternalMicroserviceException("The user with the id " + likeId.getUserId() + " already liked the post"));
+                        return Mono.error(new ExternalMicroserviceException("The user with the id " + likeDto.getUserId() + " already liked the post"));
                     }
-                    return saveLike(likeId, postId);
+                    return saveLike(likeDto);
                 });
     }
 
 
 
-    private Mono<Long> saveLike( Likes.LikeId likeId, Long postId) {
-        Likes like = Likes.builder()
-                .id(likeId)
-                .createdAt(LocalDateTime.now())
-                .build();
-        return likeRepository.save(like).thenReturn(postId);
+    private Mono<Long> saveLike( LikeDto likeDto) {
+        Likes like = LikeMapper.toEntity(likeDto);
+        return likeRepository.save(like).thenReturn(likeDto.getPostId());
     }
 
     private Mono<Long> deleteLikeAndReturnPostId(Likes like) {
-        return likeRepository.delete(like).thenReturn(like.getId().getPostId());
+        return likeRepository.deleteById(like.getId()).thenReturn(like.getPostId());
     }
 }

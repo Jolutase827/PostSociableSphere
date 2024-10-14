@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 public class LikeResponseDto {
 
     @EqualsAndHashCode.Include
+    @NotBlank(message = "El id del like no debe estar vacio")
+    private Long id;
+
     @NotBlank(message = "El id el del usuario no debe estar vacio")
     private Long userId;
 

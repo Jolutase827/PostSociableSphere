@@ -11,6 +11,9 @@ import org.springframework.data.annotation.Id;
 @Builder
 public class LikeDto {
 
+    @NotBlank(message = "El id del like no debe estar vacio")
+    private Long id;
+
     @NotBlank(message = "El id el del usuario no debe estar vacio")
     private Long userId;
 

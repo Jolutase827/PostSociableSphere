@@ -10,6 +10,7 @@ import lombok.*;
 @Builder
 public class NewOwnerDto {
 
+
     @NotBlank(message = "El id el del post no debe estar vacio")
     private Long postId;
 

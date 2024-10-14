@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface PostUserRepository extends R2dbcRepository<PostUser, PostUser.PostUserId> {
+public interface PostUserRepository extends R2dbcRepository<PostUser, Long> {
 
     Flux<PostUser> findByIdPostId(Long postId);
 
