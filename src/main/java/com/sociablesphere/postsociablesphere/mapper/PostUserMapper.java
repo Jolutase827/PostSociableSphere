@@ -8,10 +8,8 @@ public class PostUserMapper {
 
     public static PostUser toEntity(Long postId, Long userId){
         return PostUser.builder()
-                .id(PostUser.PostUserId.builder()
-                        .postId(postId)
-                        .userId(userId)
-                        .build())
+                .postId(postId)
+                .userId(userId)
                 .build();
     }
 
