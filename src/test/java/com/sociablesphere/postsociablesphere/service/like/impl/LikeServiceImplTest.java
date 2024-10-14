@@ -1,6 +1,5 @@
 package com.sociablesphere.postsociablesphere.service.like.impl;
 
-import com.sociablesphere.postsociablesphere.api.dto.LikeDto;
 import com.sociablesphere.postsociablesphere.api.dto.LikeResponseDto;
 import com.sociablesphere.postsociablesphere.exceptions.ExternalMicroserviceException;
 import com.sociablesphere.postsociablesphere.repository.LikeRepository;
@@ -148,7 +147,7 @@ public class LikeServiceImplTest {
         @DisplayName("Given a valid postId, when getLikesByPostId is called, then return set of LikeResponseDto")
         void getLikesByPostIdValid() {
             // Given
-            when(likeRepository.findByIdPostId(POST_ID)).thenReturn(Flux.just(LIKE));
+            when(likeRepository.findByPostId(POST_ID)).thenReturn(Flux.just(LIKE));
 
             // When
             Mono<Set<LikeResponseDto>> result = likeService.getLikesByPostId(POST_ID);
@@ -160,7 +159,7 @@ public class LikeServiceImplTest {
                     })
                     .verifyComplete();
 
-            verify(likeRepository).findByIdPostId(POST_ID);
+            verify(likeRepository).findByPostId(POST_ID);
         }
     }
 
@@ -171,7 +170,7 @@ public class LikeServiceImplTest {
         @DisplayName("Given a valid postId, when deleteAllLikesByPostId is called, then likes are deleted")
         void deleteAllLikesByPostIdValid() {
             // Given
-            when(likeRepository.deleteByIdPostId(POST_ID)).thenReturn(Mono.empty());
+            when(likeRepository.deleteByPostId(POST_ID)).thenReturn(Mono.empty());
 
             // When
             Mono<Void> result = likeService.deleteAllLikesByPostId(POST_ID);
@@ -180,7 +179,7 @@ public class LikeServiceImplTest {
             StepVerifier.create(result)
                     .verifyComplete();
 
-            verify(likeRepository).deleteByIdPostId(POST_ID);
+            verify(likeRepository).deleteByPostId(POST_ID);
         }
     }
 }

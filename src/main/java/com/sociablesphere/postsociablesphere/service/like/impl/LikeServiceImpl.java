@@ -39,14 +39,14 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public Mono<Set<LikeResponseDto>> getLikesByPostId(Long postId) {
-        return likeRepository.findByIdPostId(postId)
+        return likeRepository.findByPostId(postId)
                 .map(LikeMapper::toResponseDto)
                 .collect(Collectors.toSet());
     }
 
     @Override
     public Mono<Void> deleteAllLikesByPostId(Long postId) {
-        return likeRepository.deleteByIdPostId(postId);
+        return likeRepository.deleteByPostId(postId);
     }
 
 

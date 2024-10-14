@@ -1,11 +1,8 @@
 package com.sociablesphere.postsociablesphere.service.postuser.impl;
 
-import com.sociablesphere.postsociablesphere.api.dto.UserResponseDto;
 import com.sociablesphere.postsociablesphere.mapper.PostUserMapper;
-import com.sociablesphere.postsociablesphere.model.Post;
 import com.sociablesphere.postsociablesphere.model.PostUser;
 import com.sociablesphere.postsociablesphere.repository.PostUserRepository;
-import com.sociablesphere.postsociablesphere.service.post.PostService;
 import com.sociablesphere.postsociablesphere.service.postuser.PostUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +19,7 @@ public class PostUserServiceImpl implements PostUserService {
 
     @Override
     public Mono<Void> deleteAllPostUserByPostId(Long postId) {
-        return postUserRepository.deleteByIdPostId(postId);
+        return postUserRepository.deleteByPostId(postId);
     }
 
     @Override
@@ -32,6 +29,6 @@ public class PostUserServiceImpl implements PostUserService {
     }
 
     public Flux<PostUser> findAllPostUserByPostId(Long postId){
-        return postUserRepository.findByIdPostId(postId);
+        return postUserRepository.findByPostId(postId);
     }
 }

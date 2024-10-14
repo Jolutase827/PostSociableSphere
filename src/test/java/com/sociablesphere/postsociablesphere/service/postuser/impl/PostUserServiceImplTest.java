@@ -52,7 +52,7 @@ public class PostUserServiceImplTest {
         @DisplayName("Given a valid postId, when deleteAllPostUserByPostId is called, then PostUsers are deleted")
         void deleteAllPostUsersByPostIdValid() {
             // Given
-            when(postUserRepository.deleteByIdPostId(POST_ID)).thenReturn(Mono.empty());
+            when(postUserRepository.deleteByPostId(POST_ID)).thenReturn(Mono.empty());
 
             // When
             Mono<Void> result = postUserService.deleteAllPostUserByPostId(POST_ID);
@@ -61,7 +61,7 @@ public class PostUserServiceImplTest {
             StepVerifier.create(result)
                     .verifyComplete();
 
-            verify(postUserRepository).deleteByIdPostId(POST_ID);
+            verify(postUserRepository).deleteByPostId(POST_ID);
         }
     }
 
@@ -72,7 +72,7 @@ public class PostUserServiceImplTest {
         @DisplayName("Given a valid postId, when findAllPostUserByPostId is called, then return Flux of PostUser")
         void findAllPostUsersByPostIdValid() {
             // Given
-            when(postUserRepository.findByIdPostId(POST_ID)).thenReturn(Flux.just(POST_USER));
+            when(postUserRepository.findByPostId(POST_ID)).thenReturn(Flux.just(POST_USER));
 
             // When
             Flux<PostUser> result = postUserService.findAllPostUserByPostId(POST_ID);
@@ -82,7 +82,7 @@ public class PostUserServiceImplTest {
                     .expectNext(POST_USER)
                     .verifyComplete();
 
-            verify(postUserRepository).findByIdPostId(POST_ID);
+            verify(postUserRepository).findByPostId(POST_ID);
         }
     }
 }
