@@ -1,12 +1,13 @@
 package com.sociablesphere.postsociablesphere.mapper;
 
-import com.sociablesphere.postsociablesphere.api.dto.UserResponseDto;
-import com.sociablesphere.postsociablesphere.model.Post;
 import com.sociablesphere.postsociablesphere.model.PostUser;
+import org.modelmapper.ModelMapper;
 
 public class PostUserMapper {
 
-    public static PostUser toEntity(Long postId, Long userId){
+    private static final ModelMapper modelMapper = new ModelMapper();
+
+    public static PostUser toEntity(Long postId, Long userId) {
         return PostUser.builder()
                 .postId(postId)
                 .userId(userId)

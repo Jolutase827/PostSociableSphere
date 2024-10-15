@@ -3,24 +3,17 @@ package com.sociablesphere.postsociablesphere.mapper;
 import com.sociablesphere.postsociablesphere.api.dto.LikeDto;
 import com.sociablesphere.postsociablesphere.api.dto.LikeResponseDto;
 import com.sociablesphere.postsociablesphere.model.Likes;
-
-import java.time.LocalDateTime;
+import org.modelmapper.ModelMapper;
 
 public class LikeMapper {
 
+    private static final ModelMapper modelMapper = new ModelMapper();
+
     public static Likes toEntity(LikeDto dto) {
-        return Likes.builder()
-                .userId(dto.getUserId())
-                .postId(dto.getPostId())
-                .createdAt(LocalDateTime.now())
-                .build();
+        return modelMapper.map(dto, Likes.class);
     }
 
     public static LikeResponseDto toResponseDto(Likes likes) {
-        return LikeResponseDto.builder()
-                .userId(likes.getUserId())
-                .createdAt(likes.getCreatedAt())
-                .build();
+        return modelMapper.map(likes, LikeResponseDto.class);
     }
-
 }

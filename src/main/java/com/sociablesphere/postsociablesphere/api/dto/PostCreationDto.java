@@ -2,6 +2,7 @@ package com.sociablesphere.postsociablesphere.api.dto;
 
 import com.sociablesphere.postsociablesphere.constraints.PostValidationConstraint;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -18,30 +19,28 @@ public class PostCreationDto {
     @NotBlank(message = "El contenido no debe estar vacio")
     private String content;
 
-    @NotBlank(message = "El id el del usuario no debe estar vacio")
+    @NotBlank(message = "El tipo no debe estar vacio")
     @Pattern(regexp = "text|image|video", message = "Type must be 'text', 'image', or 'video'")
     private String type;
 
-    @NotBlank
+    @NotNull(message = "isPaid no debe ser nulo")
     private Boolean isPaid;
 
-    @NotBlank(message = "El coste no debe estar vacio")
+    @NotNull(message = "El coste no debe estar vacio")
     private BigDecimal cost;
 
-    @NotBlank
+    @NotNull(message = "isAd no debe ser nulo")
     private Boolean isAd;
 
-    @NotBlank(message = "Las vistas no deben estar vacias")
+    @NotNull(message = "Las vistas no deben estar vacias")
     private Integer maxViews;
 
     @NotBlank(message = "El pie de post no debe estar vacio")
     private String footer;
 
-    @NotBlank(message = "El parentId no debe estar vacio")
+    @NotNull(message = "El parentId no debe estar vacio")
     private Long parentId;
 
-    @NotBlank(message = "El id el del usuario no debe estar vacio")
+    @NotNull(message = "El id del usuario no debe estar vacio")
     private Long userId;
-
-
 }
