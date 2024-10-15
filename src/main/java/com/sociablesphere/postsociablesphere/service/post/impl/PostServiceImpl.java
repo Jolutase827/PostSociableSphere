@@ -57,9 +57,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Mono<UserResponseDto> addOwner(NewOwnerDto newOwnerDto) {
-        Mono<UserResponseDto> userResponseDtoMono = userService.getUserOrThrow(newOwnerDto.getUserId());
-        return postUserService.savePostUser(newOwnerDto.getPostId(), newOwnerDto.getUserId())
-                .then(userResponseDtoMono);
+        return userService.getUserOrThrow(newOwnerDto.getUserId())
+                .flatMap(userResponseDto ->
+                        postUserService.savePostUser(newOwnerDto.getPostId(), newOwnerDto.getUserId())
+                                .then(Mono.just(userResponseDto))
+                );
     }
 
     private Mono<PostResponseDto> createNewPost(PostCreationDto postCreationDto, UserResponseDto user) {
